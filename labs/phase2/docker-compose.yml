@@ -12,6 +12,23 @@ services:
       redis:
         condition: service_started
 
+  rails:
+    build: ./url-shortener/rails
+    environment:
+      RAILS_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab
+      POSTGRES_DB: lab
+      POSTGRES_QUEUE_DB: lab
+      SOLID_QUEUE_IN_PUMA: "true"
+    ports:
+      - "53000:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   postgres:
     image: postgres:16-alpine
     environment:
