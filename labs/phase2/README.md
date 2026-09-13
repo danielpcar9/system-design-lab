@@ -2,11 +2,13 @@
 
 This folder turns the URL Shortener scenario into a real backend exercise.
 
-Start infrastructure:
+Start infrastructure and the FastAPI service:
 
 ```bash
 docker compose -f labs/phase2/docker-compose.yml up -d
 ```
+
+FastAPI is available at `http://localhost:58000` and uses PostgreSQL as the source of truth plus Redis as a five-minute cache for redirects.
 
 Run the FastAPI starter:
 
@@ -17,6 +19,12 @@ uv run pytest
 uv run uvicorn app.main:app --reload
 ```
 
-The FastAPI starter intentionally uses an in-memory store. Replace it in the next exercise with PostgreSQL, then add Redis for `GET /{code}` and measure the difference between a cold and warm cache.
+Run the integration checks against Compose:
+
+```bash
+PHASE2_INTEGRATION=1 uv run pytest
+```
+
+The FastAPI app keeps an in-memory fallback for fast unit tests, but Compose exercises the PostgreSQL + Redis path. The next exercise is to replace the deterministic code generator with a collision-safe strategy.
 
 The Rails folder contains the contract and implementation checkpoints. Keep Rails and FastAPI aligned through the shared contract rather than comparing framework slogans.
