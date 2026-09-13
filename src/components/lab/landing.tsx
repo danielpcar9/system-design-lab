@@ -7,10 +7,25 @@ import { lessonFor } from "@/lib/lab/lessons";
 import { FAMILY_META } from "@/lib/lab/meta";
 import { SCENARIOS } from "@/lib/lab/scenarios";
 import { useLabStore } from "@/lib/lab/store";
-import type { KindFamily } from "@/lib/lab/types";
+import type { KindFamily, StudioMode } from "@/lib/lab/types";
 import { cn } from "@/lib/utils";
 
 const FAMILY_ORDER: KindFamily[] = ["compute", "speed", "persist", "agentic"];
+
+const LEARNING_PATH: Array<{
+  number: string;
+  title: keyof typeof UI;
+  body: keyof typeof UI;
+  scenarioId: string;
+  mode: StudioMode;
+}> = [
+  { number: "01", title: "pathContract", body: "pillar1Body", scenarioId: "url-shortener", mode: "design" },
+  { number: "02", title: "pathData", body: "pillar2Body", scenarioId: "url-shortener", mode: "decisions" },
+  { number: "03", title: "pathScale", body: "pillar3Body", scenarioId: "url-shortener", mode: "stress" },
+  { number: "04", title: "pathCode", body: "practiceLead", scenarioId: "url-shortener", mode: "practice" },
+  { number: "05", title: "pathAgentic", body: "pillar4Body", scenarioId: "rag-support", mode: "design" },
+  { number: "06", title: "pathInterview", body: "practiceExercise", scenarioId: "rag-support", mode: "interview" },
+];
 
 export function Landing() {
   const locale = useLabStore((s) => s.locale);
@@ -96,6 +111,35 @@ export function Landing() {
             </div>
           ))}
         </dl>
+      </section>
+
+      <section className="border-y border-border bg-bg">
+        <div className="mx-auto max-w-7xl px-4 py-14">
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.learningPath)}</p>
+            <h2 className="mt-2 font-serif text-3xl italic">{t(locale, UI.learningPathLead)}</h2>
+          </div>
+          <ol className="mt-8 divide-y divide-border border-y border-border">
+            {LEARNING_PATH.map((step) => (
+              <li key={step.number} className="grid gap-3 py-5 sm:grid-cols-[4rem_1fr_auto] sm:items-center">
+                <span className="font-mono text-sm text-violet">{step.number}</span>
+                <div>
+                  <h3 className="font-serif text-xl italic text-fg">{t(locale, UI[step.title])}</h3>
+                  <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">{t(locale, UI[step.body])}</p>
+                </div>
+                <Button variant="secondary" size="sm" asChild>
+                  <Link
+                    to="/lab/$scenarioId"
+                    params={{ scenarioId: step.scenarioId }}
+                    onClick={() => setStudioMode(step.mode)}
+                  >
+                    {t(locale, UI.pathOpen)}
+                  </Link>
+                </Button>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
 
       <section className="border-y border-border bg-surface">

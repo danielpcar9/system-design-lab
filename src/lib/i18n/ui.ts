@@ -28,6 +28,18 @@ export const UI = {
   healthy: { en: "Healthy", es: "Sano" },
   bottleneck: { en: "Bottleneck", es: "Cuello de botella" },
   liveViewer: { en: "Live viewer", es: "Visor en vivo" },
+  learningPath: { en: "Learning path", es: "Ruta de aprendizaje" },
+  learningPathLead: {
+    en: "A short loop from contract to interview. Open a checkpoint, make a decision, and explain the trade-off before moving on.",
+    es: "Un recorrido corto del contrato a la entrevista. Abre un checkpoint, toma una decisión y explica el trade-off antes de avanzar.",
+  },
+  pathContract: { en: "HTTP contract", es: "Contrato HTTP" },
+  pathData: { en: "Data model", es: "Modelo de datos" },
+  pathScale: { en: "Scale & cache", es: "Escala y caché" },
+  pathCode: { en: "Write the code", es: "Escribe el código" },
+  pathAgentic: { en: "Agentic architecture", es: "Arquitectura agéntica" },
+  pathInterview: { en: "Defend the design", es: "Defiende el diseño" },
+  pathOpen: { en: "Start checkpoint", es: "Abrir checkpoint" },
   authentication: { en: "Authentication", es: "Autenticación" },
   authViewerLead: {
     en: "Cookie session and has_secure_password on the left. OAuth2, Pydantic, and a JWT you assemble on the right. Setup is uv versus rv.",
