@@ -34,3 +34,12 @@ def test_duplicate_code_returns_409():
     response = client.post("/links", json={"url": "https://example.com/other"})
 
     assert response.status_code == 409
+
+
+def test_redirect_returns_302_for_known_link():
+    client.post("/links", json={"url": "https://example.com/article"})
+
+    response = client.get("/r/abc123", follow_redirects=False)
+
+    assert response.status_code == 302
+    assert response.headers["location"] == "https://example.com/article"

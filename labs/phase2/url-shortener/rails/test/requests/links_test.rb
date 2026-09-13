@@ -17,4 +17,10 @@ class LinksTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_equal "https://example.com/article", response.headers["Location"]
   end
+
+  test "rejects an invalid URL" do
+    post "/links", params: { link: { url: "not-a-url" } }, as: :json
+
+    assert_response :unprocessable_entity
+  end
 end
