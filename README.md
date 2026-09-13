@@ -13,11 +13,16 @@ UI is bilingual (**ES / EN**). Code, terminal commands, and architecture terms (
 - **Stress test** — RPS, mix, data, tokens/request. Simulated p99, diagnoses that can add the missing box.
 - **Interview tracks** — Backend (CAP, sharding, cache, SPOF) and AI Engineer (context, routing, durable agent runs, LLM failure). Chromatic score cards at the end.
 - **Cheat sheets** — consistent hashing, rate limiting, RAG, model routing, context windows.
+- **Practice** — write a Rails or FastAPI answer, run a lightweight checkpoint, and keep attempts locally.
 
 ## Labs
 
 **Backend:** URL Shortener · Twitter Feed · WhatsApp · Uber  
 **Agentic:** RAG Support Agent · Agentic Pipeline
+
+## Phase 2 backend lab
+
+The first real backend exercise lives in [`labs/phase2`](labs/phase2): one shared URL Shortener contract, a runnable FastAPI starter with tests, Rails implementation checkpoints, and PostgreSQL/Redis infrastructure through Docker Compose.
 
 ## Stack
 
