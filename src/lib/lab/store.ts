@@ -1,0 +1,178 @@
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { Locale } from "@/lib/i18n/locale";
+import { DEFAULT_DECISIONS } from "./decisions";
+import type {
+  Decisions,
+  FlowKind,
+  InspectorTab,
+  InterviewLevel,
+  InterviewTrack,
+  LabEdge,
+  LabNode,
+  Lens,
+  LoadInputs,
+  StudioMode,
+  SyncKind,
+} from "./types";
+
+type Positions = Record<string, { x: number; y: number }>;
+
+type LabState = {
+  locale: Locale;
+  lens: Lens;
+  inspectorTab: InspectorTab;
+  selectedId: string | null;
+  selectedEdge: string | null;
+  positions: Positions;
+  studioMode: StudioMode;
+  connectMode: boolean;
+  connectFrom: string | null;
+  extraNodes: Record<string, LabNode[]>;
+  extraEdges: Record<string, LabEdge[]>;
+  edgeMeta: Record<string, { flow: FlowKind; sync: SyncKind }>;
+  decisions: Decisions;
+  load: LoadInputs;
+  simulating: boolean;
+  interviewLevel: InterviewLevel;
+  interviewTrack: InterviewTrack;
+  interviewStep: number;
+  interviewChecks: Record<string, boolean>;
+  envelope: { dau: number; reqPerUser: number; peakX: number };
+  cheatOpen: boolean;
+  cheatId: string | null;
+  setLocale: (locale: Locale) => void;
+  setLens: (lens: Lens) => void;
+  setInspectorTab: (tab: InspectorTab) => void;
+  setSelectedId: (id: string | null) => void;
+  setSelectedEdge: (id: string | null) => void;
+  setNodePosition: (key: string, x: number, y: number) => void;
+  setStudioMode: (mode: StudioMode) => void;
+  setConnectMode: (on: boolean) => void;
+  setConnectFrom: (id: string | null) => void;
+  addNode: (scenarioId: string, node: LabNode) => void;
+  addEdge: (scenarioId: string, edge: LabEdge) => void;
+  setEdgeMeta: (key: string, flow: FlowKind, sync: SyncKind) => void;
+  setDecision: <K extends keyof Decisions>(key: K, value: Decisions[K]) => void;
+  setLoad: (partial: Partial<LoadInputs>) => void;
+  setSimulating: (on: boolean) => void;
+  setInterviewLevel: (level: InterviewLevel) => void;
+  setInterviewTrack: (track: InterviewTrack) => void;
+  setInterviewStep: (step: number) => void;
+  toggleCheck: (id: string) => void;
+  setEnvelope: (partial: { dau?: number; reqPerUser?: number; peakX?: number }) => void;
+  setCheatOpen: (open: boolean) => void;
+  setCheatId: (id: string | null) => void;
+};
+
+export const useLabStore = create<LabState>()(
+  persist(
+    (set) => ({
+      locale: "es",
+      lens: "split",
+      inspectorTab: "code",
+      selectedId: null,
+      selectedEdge: null,
+      positions: {},
+      studioMode: "design",
+      connectMode: false,
+      connectFrom: null,
+      extraNodes: {},
+      extraEdges: {},
+      edgeMeta: {},
+      decisions: DEFAULT_DECISIONS,
+      load: { rps: 800, readRatio: 0.8, dataGb: 80, tokPerReq: 1200 },
+      simulating: false,
+      interviewLevel: "senior",
+      interviewTrack: "backend",
+      interviewStep: 0,
+      interviewChecks: {},
+      envelope: { dau: 1_000_000, reqPerUser: 20, peakX: 3 },
+      cheatOpen: false,
+      cheatId: null,
+      setLocale: (locale) => set({ locale }),
+      setLens: (lens) => set({ lens }),
+      setInspectorTab: (tab) => set({ inspectorTab: tab }),
+      setSelectedId: (id) => set({ selectedId: id, selectedEdge: null }),
+      setSelectedEdge: (id) => set({ selectedEdge: id, selectedId: null }),
+      setNodePosition: (key, x, y) =>
+        set((state) => ({
+          positions: { ...state.positions, [key]: { x, y } },
+        })),
+      setStudioMode: (mode) => set({ studioMode: mode, connectMode: false, connectFrom: null }),
+      setConnectMode: (on) => set({ connectMode: on, connectFrom: null }),
+      setConnectFrom: (id) => set({ connectFrom: id }),
+      addNode: (scenarioId, node) =>
+        set((state) => ({
+          extraNodes: {
+            ...state.extraNodes,
+            [scenarioId]: [...(state.extraNodes[scenarioId] ?? []), node],
+          },
+          selectedId: node.id,
+        })),
+      addEdge: (scenarioId, edge) =>
+        set((state) => {
+          const cur = state.extraEdges[scenarioId] ?? [];
+          if (cur.some((e) => e.from === edge.from && e.to === edge.to)) return state;
+          return {
+            extraEdges: { ...state.extraEdges, [scenarioId]: [...cur, edge] },
+            connectFrom: null,
+          };
+        }),
+      setEdgeMeta: (key, flow, sync) =>
+        set((state) => ({
+          edgeMeta: { ...state.edgeMeta, [key]: { flow, sync } },
+        })),
+      setDecision: (key, value) =>
+        set((state) => ({ decisions: { ...state.decisions, [key]: value } })),
+      setLoad: (partial) => set((state) => ({ load: { ...state.load, ...partial } })),
+      setSimulating: (on) => set({ simulating: on }),
+      setInterviewLevel: (level) => set({ interviewLevel: level }),
+      setInterviewTrack: (track) =>
+        set((state) =>
+          state.interviewTrack === track ? state : { interviewTrack: track, interviewStep: 0 },
+        ),
+      setInterviewStep: (step) => set({ interviewStep: step }),
+      toggleCheck: (id) =>
+        set((state) => ({
+          interviewChecks: {
+            ...state.interviewChecks,
+            [id]: !state.interviewChecks[id],
+          },
+        })),
+      setEnvelope: (partial) =>
+        set((state) => ({ envelope: { ...state.envelope, ...partial } })),
+      setCheatOpen: (open) => set({ cheatOpen: open }),
+      setCheatId: (id) => set({ cheatId: id, cheatOpen: true }),
+    }),
+    {
+      name: "sdl-lab-v5",
+      partialize: (state) => ({
+        locale: state.locale,
+        lens: state.lens,
+        inspectorTab: state.inspectorTab,
+        positions: state.positions,
+        extraNodes: state.extraNodes,
+        extraEdges: state.extraEdges,
+        edgeMeta: state.edgeMeta,
+        decisions: state.decisions,
+        load: state.load,
+        interviewLevel: state.interviewLevel,
+        interviewTrack: state.interviewTrack,
+        envelope: state.envelope,
+      }),
+    },
+  ),
+);
+
+export function posKey(scenarioId: string, nodeId: string): string {
+  return `${scenarioId}:${nodeId}`;
+}
+
+export function extraOf(map: Record<string, LabNode[]>, id: string): LabNode[] {
+  return map[id] ?? [];
+}
+
+export function extraEdgesOf(map: Record<string, LabEdge[]>, id: string): LabEdge[] {
+  return map[id] ?? [];
+}

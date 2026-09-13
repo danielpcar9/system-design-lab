@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --color-bg: #0c0e09;
+  --color-surface: #121214;
+  --color-elevated: #1a1b1c;
+  --color-fg: #f2f1ea;
+  --color-muted: #9a9a94;
+  --color-subtle: #6e6e68;
+  --color-border: rgb(242 241 234 / 0.12);
+  --color-border-strong: rgb(242 241 234 / 0.22);
+
+  --color-accent: #2e61f6;
+  --color-accent-fg: #f2f1ea;
+  --color-ring: #2e61f6;
+
+  --color-cobalt: #2e61f6;
+  --color-cobalt-dim: rgb(46 97 246 / 0.16);
+  --color-magenta: #ff2070;
+  --color-magenta-dim: rgb(255 32 112 / 0.16);
+  --color-sun: #fcff1a;
+  --color-sun-dim: rgb(252 255 26 / 0.12);
+  --color-violet: #9d4edd;
+  --color-violet-dim: rgb(157 78 221 / 0.16);
+  --color-ok: #10b981;
+  --color-ok-dim: rgb(16 185 129 / 0.16);
+  --color-fail: #ef4444;
+  --color-fail-dim: rgb(239 68 68 / 0.16);
+
+  --color-rails: #ff2070;
+  --color-rails-dim: rgb(255 32 112 / 0.16);
+  --color-fastapi: #2e61f6;
+  --color-fastapi-dim: rgb(46 97 246 / 0.16);
+
+  --color-syn-kw: #9ec0ff;
+  --color-syn-str: #7ee0b3;
+  --color-syn-cm: #6e6e68;
+  --color-syn-fn: #f2f1ea;
+  --color-syn-type: #d4b3ff;
+  --color-syn-num: #fcff1a;
+  --color-syn-sym: #ff7aa8;
+  --color-syn-dec: #9ec0ff;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-panel: 0 18px 40px rgb(0 0 0 / 0.45);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: rgb(46 97 246 / 0.28);
+    color: var(--color-fg);
+  }
+}
+
+@keyframes sdl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes sdl-hood {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.sdl-stagger {
+  animation: sdl-rise 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sdl-hood-step {
+  animation: sdl-hood 250ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sdl-stagger,
+  .sdl-hood-step {
+    animation: none;
+  }
+}
+
+.canvas-grid {
+  background-color: var(--color-bg);
+  background-image: radial-gradient(rgb(46 97 246 / 0.11) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+[data-family="compute"] {
+  --node-accent: var(--color-cobalt);
+}
+[data-family="speed"] {
+  --node-accent: var(--color-magenta);
+}
+[data-family="persist"] {
+  --node-accent: var(--color-sun);
+}
+[data-family="agentic"] {
+  --node-accent: var(--color-violet);
+}
+
+.node-card {
+  border-color: color-mix(in oklab, var(--node-accent) 42%, var(--color-border));
+  background: color-mix(in oklab, var(--node-accent) 6%, var(--color-surface));
+}
+
+.node-card[data-selected="true"] {
+  border-color: var(--node-accent);
+  background: color-mix(in oklab, var(--node-accent) 12%, var(--color-elevated));
+  box-shadow:
+    0 0 0 1px var(--node-accent),
+    0 0 22px color-mix(in oklab, var(--node-accent) 28%, transparent);
+}
+
+.node-bar {
+  background: var(--node-accent);
+}
+
+.tok-kw { color: var(--color-syn-kw); }
+.tok-str { color: var(--color-syn-str); }
+.tok-cm { color: var(--color-syn-cm); font-style: italic; }
+.tok-fn { color: var(--color-syn-fn); }
+.tok-type { color: var(--color-syn-type); }
+.tok-num { color: var(--color-syn-num); }
+.tok-sym { color: var(--color-syn-sym); }
+.tok-dec { color: var(--color-syn-dec); }
+.tok-plain { color: var(--color-fg); }
