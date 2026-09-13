@@ -111,6 +111,16 @@ export function StressPanel({
   const [hasSimulated, setHasSimulated] = useState(false);
   const [tick, setTick] = useState(24);
   const tokPerReq = load.tokPerReq ?? 1200;
+  const reflectionKey = `sdl-reflection:${scenarioId}`;
+  const [reflection, setReflection] = useState("");
+
+  useEffect(() => {
+    setReflection(window.localStorage.getItem(reflectionKey) ?? "");
+  }, [reflectionKey]);
+
+  useEffect(() => {
+    if (reflection) window.localStorage.setItem(reflectionKey, reflection);
+  }, [reflection, reflectionKey]);
 
   const result = useMemo(
     () =>
@@ -331,6 +341,21 @@ export function StressPanel({
               </li>
             ))}
           </ul>
+
+          <details className="rounded-lg border border-border bg-elevated p-4">
+            <summary className="cursor-pointer text-sm font-medium text-fg">
+              {t(locale, UI.reflectionTitle)}
+            </summary>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{t(locale, UI.reflectionPrompt)}</p>
+            <textarea
+              value={reflection}
+              onChange={(event) => setReflection(event.target.value)}
+              className="mt-3 min-h-28 w-full resize-y rounded-md border border-border bg-bg p-3 text-sm text-fg outline-none focus:border-accent"
+              placeholder={t(locale, UI.reflectionPlaceholder)}
+              aria-label={t(locale, UI.reflectionTitle)}
+            />
+            {reflection && <p className="mt-2 text-xs text-subtle">{t(locale, UI.reflectionSaved)}</p>}
+          </details>
         </>
       )}
     </div>

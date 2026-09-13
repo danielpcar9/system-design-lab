@@ -231,6 +231,16 @@ export const UI = {
     en: "Capacity ~ {n} rps · utilization {u}",
     es: "Capacidad ~ {n} rps · utilización {u}",
   },
+  reflectionTitle: { en: "Reflection checkpoint", es: "Checkpoint de reflexión" },
+  reflectionPrompt: {
+    en: "Explain the bottleneck in one sentence, name the trade-off of your fix, and say what you would measure next.",
+    es: "Explica el cuello de botella en una frase, nombra el trade-off de tu solución y di qué medirías después.",
+  },
+  reflectionPlaceholder: {
+    en: "The bottleneck is… My fix trades… Next I would measure…",
+    es: "El cuello de botella es… Mi solución intercambia… Después mediría…",
+  },
+  reflectionSaved: { en: "Saved locally for this scenario.", es: "Guardado localmente para este escenario." },
 
   decisionsKicker: { en: "Trade-off decision matrix", es: "Matriz de trade-offs" },
   decisionsTitle: { en: "Levers that change the sim", es: "Palancas que cambian la sim" },
