@@ -6,6 +6,7 @@ import { DecisionMatrix } from "@/components/lab/decision-matrix";
 import { InterviewPanel } from "@/components/lab/interview-panel";
 import { ComponentPalette, EdgeInspector } from "@/components/lab/palette";
 import { ModeTabs } from "@/components/lab/mode-tabs";
+import { PracticePanel } from "@/components/lab/practice-panel";
 import { StressPanel } from "@/components/lab/stress-panel";
 import { DualStackViewer } from "@/components/lab/viewer";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -106,7 +107,9 @@ function LabPage() {
   }
 
   const inspector =
-    studioMode === "stress" ? (
+    studioMode === "practice" ? (
+      <PracticePanel scenarioId={raw.id} kind={node?.kind ?? "api"} />
+    ) : studioMode === "stress" ? (
       <StressPanel
         scenarioId={raw.id}
         nodes={graph.nodes}

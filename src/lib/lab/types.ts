@@ -1,7 +1,7 @@
 export type StackId = "rails" | "fastapi";
 export type Lens = "split" | StackId;
 export type InspectorTab = "code" | "hood" | "tradeoffs";
-export type StudioMode = "design" | "stress" | "decisions" | "interview";
+export type StudioMode = "design" | "practice" | "stress" | "decisions" | "interview";
 export type FlowKind = "read" | "write" | "mixed";
 export type SyncKind = "sync" | "async";
 export type CapChoice = "cp" | "ap";
@@ -135,6 +135,7 @@ export type Diagnosis = {
 
 export type SimResult = {
   p50: number;
+  p95: number;
   p99: number;
   cost: number;
   availability: number;

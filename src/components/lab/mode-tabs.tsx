@@ -3,7 +3,7 @@ import { useLabStore } from "@/lib/lab/store";
 import type { StudioMode } from "@/lib/lab/types";
 import { cn } from "@/lib/utils";
 
-const MODES: StudioMode[] = ["design", "stress", "decisions", "interview"];
+const MODES: StudioMode[] = ["design", "practice", "stress", "decisions", "interview"];
 
 export function ModeTabs({
   value,

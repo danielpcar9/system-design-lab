@@ -114,6 +114,7 @@ export function familyHint(locale: Locale, family: KindFamily): string {
 
 export function modeLabel(locale: Locale, mode: StudioMode): string {
   if (mode === "design") return t(locale, UI.modeDesign);
+  if (mode === "practice") return t(locale, UI.modePractice);
   if (mode === "stress") return t(locale, UI.modeStress);
   if (mode === "decisions") return t(locale, UI.modeDecisions);
   return t(locale, UI.modeInterview);

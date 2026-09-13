@@ -347,6 +347,7 @@ export function simulate(args: {
 
   return {
     p50: Math.round(p50),
+    p95: Math.round(p50 + (p99 - p50) * 0.65),
     p99: Math.round(p99),
     cost: Math.round(cost + aiCost),
     availability: Math.round(availability * 100) / 100,

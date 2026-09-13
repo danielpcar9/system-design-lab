@@ -147,6 +147,19 @@ export function StressPanel({
           {t(locale, UI.stressLead)}
           {result.agentic ? t(locale, UI.stressLeadAgentic) : ""}
         </p>
+        <div className="mt-3 rounded-lg border border-sun/30 bg-sun-dim/40 p-3">
+          <p className="text-xs font-medium text-sun">{t(locale, UI.stressModelNotice)}</p>
+          <details className="mt-2 text-xs text-muted">
+            <summary className="cursor-pointer text-fg hover:text-sun">
+              {t(locale, UI.stressAssumptions)}
+            </summary>
+            <p className="mt-2 leading-relaxed">{t(locale, UI.stressAssumptionsBody)}</p>
+            <ul className="mt-2 list-disc space-y-1 pl-4">
+              <li>{t(locale, UI.stressAssumptionHeadroom)}</li>
+              <li>{t(locale, UI.stressAssumptionCost)}</li>
+            </ul>
+          </details>
+        </div>
       </header>
 
       <Field
@@ -226,6 +239,7 @@ export function StressPanel({
 
           <div className="grid grid-cols-2 gap-2">
             <Metric label="p50" value={`${result.p50} ms`} warn={result.p50 > 80} ok={result.p50 <= 40} />
+            <Metric label="p95" value={`${result.p95} ms`} warn={result.p95 > 180} ok={result.p95 <= 90} />
             <Metric label="p99" value={`${result.p99} ms`} warn={result.p99 > 250} ok={result.p99 <= 120} />
             <Metric label={t(locale, UI.infraApis)} value={`$${result.cost.toLocaleString()}/mo`} />
             <Metric
