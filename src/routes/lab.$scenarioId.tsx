@@ -145,6 +145,10 @@ function LabPage() {
             <span className="text-fg">{scenario.prompt}.</span> {scenario.brief}{" "}
             <span className="font-mono text-xs text-subtle">{scenario.load}</span>
           </p>
+          <p className="max-w-3xl rounded-md border border-sun/25 bg-sun-dim/30 px-3 py-2 text-xs leading-relaxed text-muted">
+            <span className="font-medium text-sun">{t(locale, UI.constraintLabel)}:</span>{" "}
+            {scenario.constraint}
+          </p>
           <div className="flex w-full min-w-0 gap-2 overflow-x-auto pb-0.5 lg:w-auto">
             {SCENARIOS.map((s) => {
               const loc = localizeScenario(s, locale);

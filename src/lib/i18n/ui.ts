@@ -138,6 +138,10 @@ export const UI = {
   practiceRails: { en: "Rails answer", es: "Respuesta Rails" },
   practiceFastapi: { en: "FastAPI answer", es: "Respuesta FastAPI" },
   practicePrompt: { en: "Exercise", es: "Ejercicio" },
+  practiceExercise: {
+    en: "Implement the create-link endpoint for the selected architecture. Validate input, persist a unique code, return 201, and make collision failure explicit.",
+    es: "Implementa el endpoint de creación de links para la arquitectura elegida. Valida la entrada, persiste un código único, devuelve 201 y haz explícito el fallo por colisión.",
+  },
   practicePlaceholder: {
     en: "Write your route, validation, persistence, and failure handling here…",
     es: "Escribe aquí la ruta, validación, persistencia y manejo de fallos…",
@@ -157,6 +161,11 @@ export const UI = {
   practiceFailure: { en: "Explicit failure", es: "Fallo explícito" },
   practicePersistence: { en: "Persistence constraint", es: "Restricción de persistencia" },
   practiceExplanation: { en: "Trade-off explanation", es: "Explicación del trade-off" },
+  practiceCheckpointNote: {
+    en: "This is a lightweight checkpoint, not a compiler or a test runner.",
+    es: "Este es un checkpoint ligero, no un compilador ni un runner de tests.",
+  },
+  constraintLabel: { en: "Constraint", es: "Restricción" },
 
   stressKicker: { en: "Stress test engine", es: "Motor de stress test" },
   stressTitle: { en: "Simulated load", es: "Carga simulada" },

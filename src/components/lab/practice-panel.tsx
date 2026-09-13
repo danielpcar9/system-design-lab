@@ -69,7 +69,7 @@ export function PracticePanel({ scenarioId, kind }: { scenarioId: string; kind: 
 
       <section className="rounded-lg border border-border bg-elevated p-4">
         <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.practicePrompt)}</p>
-        <p className="mt-2 text-sm leading-relaxed text-fg">Implement the create-link endpoint for the selected architecture. It must validate input, persist a unique code, return 201, and make collision failure explicit.</p>
+        <p className="mt-2 text-sm leading-relaxed text-fg">{t(locale, UI.practiceExercise)}</p>
       </section>
 
       <textarea value={code} onChange={(event) => { setCode(event.target.value); setChecked(false); }} spellCheck={false} aria-label={t(locale, UI.practiceTitle)} className="min-h-64 w-full resize-y rounded-lg border border-border bg-bg p-4 font-mono text-xs leading-relaxed text-fg outline-none focus:border-accent" placeholder={t(locale, UI.practicePlaceholder)} />
@@ -86,7 +86,7 @@ export function PracticePanel({ scenarioId, kind }: { scenarioId: string; kind: 
         <section className="rounded-lg border border-border bg-elevated p-4">
           <p className={cn("font-serif text-lg italic", score === checks.length ? "text-ok" : "text-sun")}>{score}/{checks.length} · {t(locale, score === checks.length ? UI.practiceComplete : UI.practiceNeedsWork)}</p>
           <ul className="mt-3 space-y-2">{checks.map((item) => <li key={item.id} className={cn("rounded-md border px-3 py-2 text-sm", item.ok ? "border-ok/30 text-ok" : "border-fail/30 text-fail")}>{item.ok ? "✓" : "○"} {item.label}</li>)}</ul>
-          <p className="mt-3 text-xs text-subtle">This is a lightweight checkpoint, not a compiler or a test runner.</p>
+          <p className="mt-3 text-xs text-subtle">{t(locale, UI.practiceCheckpointNote)}</p>
           <p className="mt-1 text-xs text-subtle">Attempt {attempts} · saved locally in this browser.</p>
         </section>
       )}
