@@ -112,6 +112,26 @@ export function WalkthroughPanel({
         <p className="mt-2 font-mono text-xs text-subtle">{doneCount}/{WALKTHROUGH.length}</p>
       </header>
 
+      <section className="border-l-2 border-accent bg-elevated p-4" aria-labelledby="workday-ticket-title">
+        <p className="font-mono text-[11px] uppercase tracking-wide text-accent">{t(locale, UI.workdayKicker)}</p>
+        <h3 id="workday-ticket-title" className="mt-2 text-sm font-medium text-fg">
+          {t(locale, UI.workdayTitle)}
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted">{t(locale, UI.workdayLead)}</p>
+        <dl className="mt-4 grid gap-3 text-xs sm:grid-cols-3">
+          {([
+            ["workdayContext", "workdayContextBody"],
+            ["workdayDeliverable", "workdayDeliverableBody"],
+            ["workdayFeedback", "workdayFeedbackBody"],
+          ] as const).map(([term, description]) => (
+            <div key={term}>
+              <dt className="font-medium text-fg">{t(locale, UI[term])}</dt>
+              <dd className="mt-1 leading-relaxed text-subtle">{t(locale, UI[description])}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       <ol className="flex flex-wrap gap-1" aria-label={t(locale, UI.qaTitle)}>
         {WALKTHROUGH.map((item, index) => {
           const complete = Boolean(checks[item.id] || (item.id === "exercise" && mastered));
