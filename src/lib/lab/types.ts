@@ -1,7 +1,7 @@
 export type StackId = "rails" | "fastapi";
 export type Lens = "split" | StackId;
 export type InspectorTab = "code" | "hood" | "tradeoffs";
-export type StudioMode = "design" | "practice" | "stress" | "decisions" | "interview";
+export type StudioMode = "design" | "practice" | "walkthrough" | "stress" | "decisions" | "interview";
 export type FlowKind = "read" | "write" | "mixed";
 export type SyncKind = "sync" | "async";
 export type CapChoice = "cp" | "ap";

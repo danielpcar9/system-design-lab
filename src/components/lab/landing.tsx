@@ -76,6 +76,15 @@ export function Landing() {
             <Button variant="secondary" asChild>
               <Link
                 to="/lab/$scenarioId"
+                params={{ scenarioId: "url-shortener" }}
+                onClick={() => setStudioMode("walkthrough")}
+              >
+                {t(locale, UI.qaCta)}
+              </Link>
+            </Button>
+            <Button variant="secondary" asChild>
+              <Link
+                to="/lab/$scenarioId"
                 params={{ scenarioId: "rag-support" }}
                 onClick={() => setStudioMode("interview")}
               >

@@ -4,7 +4,30 @@ Este documento conecta el código con las ideas de system design. La meta no es
 memorizar Docker, Redis o OpenTelemetry, sino entender qué problema resuelve
 cada pieza y qué coste introduce.
 
+En el studio, el modo **Lab QA** recorre estos seis pasos sobre URL Shortener.
+Haz uno, predice, observa, y solo entonces cambia la siguiente variable.
+
+## Pase guiado de QA
+
+1. **Escribe el contrato** en Practicar (`Create a short link`). El navegador
+   inspecciona fuente; no ejecuta el snippet.
+2. **Pega FastAPI.** `POST /links` con `{ "url": "https://example.com/article" }`
+   (o `/docs`). Lee `201 { code, url }` y `X-Request-Id`. Sigue `GET /r/:code`.
+3. **El mismo body contra Rails.** Si el contrato es compartido, el framework
+   es un detalle. Un body nested `{ link: { url } }` sería una fuga.
+4. **Lee la traza en Jaeger** (Compose local: servicio
+   `url-shortener-fastapi` o `url-shortener-rails`). Render no exporta OTLP:
+   production-shaped, sin collector. El primer GET debe mostrar miss de Redis
+   + SQL; el segundo, solo Redis.
+5. **Apaga Redis** solo en local (`docker compose stop redis` o
+   `LAB_FAULTS=1 LAB_ENV=lab LAB_FAULT_REDIS=1`). El 302 debe seguir saliendo
+   desde PostgreSQL. Nunca actives fallos en Render.
+6. **Compara una medición.** Bench GET contra `/health` y contra un `/r/:code`
+   caliente vs frío. Stress en el studio es hipótesis; el bench es un host.
+   No elijas un ganador.
+
 ## El recorrido de una petición
+
 
 ```text
 cliente

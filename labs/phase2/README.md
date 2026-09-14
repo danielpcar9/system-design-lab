@@ -114,13 +114,17 @@ bulkheads help — and when they make p99 worse.
 
 ## Reproducible Render deployment
 
-`render.yaml` is a Blueprint, not a live deployment. Its free-tier profile
-provisions one PostgreSQL database shared by Rails, FastAPI, and Solid Queue,
-Redis, and both web services. Separate PostgreSQL schemas (`fastapi`, `rails`,
-and `solid_queue`) prevent table-name collisions while keeping the deployment
-within Render's one-free-Postgres limit. For a higher-isolation production
-profile, provision separate databases and point `QUEUE_DATABASE_URL` to the
-queue database. In the Render dashboard:
+`render.yaml` is a Blueprint. The live Render pair has already been used to
+pass the shared HTTP contract on FastAPI and Rails. Lab faults stay off there
+(`LAB_ENV=production`, `LAB_FAULTS=0`) and OTEL exporters stay disabled unless
+you attach a collector. Jaeger remains a Compose-only classroom.
+
+The free-tier Blueprint provisions one PostgreSQL database shared by Rails,
+FastAPI, and Solid Queue, plus Redis and both web services. Separate
+PostgreSQL schemas (`fastapi`, `rails`, and `solid_queue`) prevent table-name
+collisions while keeping the deployment within Render's one-free-Postgres
+limit. For a higher-isolation production profile, provision separate databases
+and point `QUEUE_DATABASE_URL` to the queue database. In the Render dashboard:
 
 1. Create a new Blueprint from this repository and select `labs/phase2/render.yaml`.
 2. Review the generated resources and choose plans appropriate for your account.
@@ -131,10 +135,10 @@ queue database. In the Render dashboard:
 6. Run the contract test against the deployed URLs using `FASTAPI_URL` and
    `RAILS_URL` environment variables.
 
-Render deployment is intentionally not claimed as live from this repository:
-it requires the user's Render account and an explicit sync. The Blueprint is
-the reproducible artifact; `DATABASE_URL`, `QUEUE_DATABASE_URL`, `REDIS_URL`,
-and `SECRET_KEY_BASE` are injected by Render rather than committed.
+The Blueprint is the reproducible artifact; `DATABASE_URL`,
+`QUEUE_DATABASE_URL`, `REDIS_URL`, and `SECRET_KEY_BASE` are injected by
+Render rather than committed.
+
 
 ## Observability
 

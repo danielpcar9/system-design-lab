@@ -36,7 +36,8 @@ Status after this pass. `[x]` shipped, `[~]` partial / environment-blocked, `[ ]
 - [x] Timeouts, retries, idempotency, breaker, bulkhead + educational copy
 - [x] Cost profiles small/medium/large in Stress (relative units)
 - [x] OpenTelemetry SDKs, optional export, request-id attributes, and local Jaeger collector configuration
-- [~] Render Blueprint — reproducible configuration is ready; live deploy still requires a Render account
+- [x] Render Blueprint — deployed; HTTP contract passing on FastAPI and Rails
+- [x] Guided QA walkthrough in the studio (contract → FastAPI → Rails → Jaeger → Redis down → bench)
 
 ## Explicit non-goals
 

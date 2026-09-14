@@ -9,6 +9,7 @@ import { ModeTabs } from "@/components/lab/mode-tabs";
 import { PracticePanel } from "@/components/lab/practice-panel";
 import { StressPanel } from "@/components/lab/stress-panel";
 import { DualStackViewer } from "@/components/lab/viewer";
+import { WalkthroughPanel } from "@/components/lab/walkthrough-panel";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { localizeLesson, localizeScenario, modeLabel, t, UI } from "@/lib/i18n";
 import { edgeKey, nextFlow, placeNode, resolveGraph } from "@/lib/lab/graph";
@@ -109,6 +110,12 @@ function LabPage() {
   const inspector =
     studioMode === "practice" ? (
       <PracticePanel scenarioId={raw.id} kind={node?.kind ?? "api"} />
+    ) : studioMode === "walkthrough" ? (
+      <WalkthroughPanel
+        scenarioId={raw.id}
+        onPractice={() => setStudioMode("practice")}
+        onStress={() => setStudioMode("stress")}
+      />
     ) : studioMode === "stress" ? (
       <StressPanel
         scenarioId={raw.id}

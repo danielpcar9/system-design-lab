@@ -18,6 +18,7 @@ from urllib.parse import urlparse
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -256,6 +257,14 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="URL Shortener Phase 2 Lab", lifespan=lifespan)
 setup_telemetry(app)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Idempotency-Key", "X-Request-Id"],
+    expose_headers=["Location", "X-Request-Id"],
+)
 
 
 @app.middleware("http")

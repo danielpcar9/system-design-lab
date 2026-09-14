@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Locale } from "@/lib/i18n/locale";
+import { DEFAULT_DECISIONS } from "./decisions";
 import type { CostProfileId } from "./cost-profiles";
 import type { Mastery } from "./curriculum";
-import { DEFAULT_DECISIONS } from "./decisions";
+import { DEFAULT_LAB_ENDPOINTS, type LabEndpoints } from "./walkthrough";
 import type {
   Decisions,
   FlowKind,
@@ -54,6 +55,9 @@ type LabState = {
   practiceProgress: Record<string, PracticeRecord>;
   practiceDrafts: Record<string, string>;
   costProfile: CostProfileId;
+  walkthroughStep: number;
+  walkthroughChecks: Record<string, boolean>;
+  labEndpoints: LabEndpoints;
   setLocale: (locale: Locale) => void;
   setLens: (lens: Lens) => void;
   setInspectorTab: (tab: InspectorTab) => void;
@@ -81,6 +85,9 @@ type LabState = {
   recordPracticeResult: (exerciseId: string, passed: boolean, failedIds: string[]) => void;
   resetPractice: (exerciseId: string) => void;
   setCostProfile: (id: CostProfileId) => void;
+  setWalkthroughStep: (step: number) => void;
+  toggleWalkthroughCheck: (id: string) => void;
+  setLabEndpoints: (partial: Partial<LabEndpoints>) => void;
 };
 
 export const useLabStore = create<LabState>()(
@@ -112,6 +119,9 @@ export const useLabStore = create<LabState>()(
       practiceProgress: {},
       practiceDrafts: {},
       costProfile: "small",
+      walkthroughStep: 0,
+      walkthroughChecks: {},
+      labEndpoints: DEFAULT_LAB_ENDPOINTS,
       setLocale: (locale) => set({ locale }),
       setLens: (lens) => set({ lens }),
       setInspectorTab: (tab) => set({ inspectorTab: tab }),
@@ -197,6 +207,16 @@ export const useLabStore = create<LabState>()(
           return { practiceProgress: next };
         }),
       setCostProfile: (id) => set({ costProfile: id }),
+      setWalkthroughStep: (step) => set({ walkthroughStep: step }),
+      toggleWalkthroughCheck: (id) =>
+        set((state) => ({
+          walkthroughChecks: {
+            ...state.walkthroughChecks,
+            [id]: !state.walkthroughChecks[id],
+          },
+        })),
+      setLabEndpoints: (partial) =>
+        set((state) => ({ labEndpoints: { ...state.labEndpoints, ...partial } })),
     }),
     {
       name: "sdl-lab-v5",
@@ -217,6 +237,9 @@ export const useLabStore = create<LabState>()(
         practiceProgress: state.practiceProgress,
         practiceDrafts: state.practiceDrafts,
         costProfile: state.costProfile,
+        walkthroughStep: state.walkthroughStep,
+        walkthroughChecks: state.walkthroughChecks,
+        labEndpoints: state.labEndpoints,
       }),
     },
   ),
