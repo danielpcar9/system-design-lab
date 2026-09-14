@@ -1,15 +1,13 @@
 # Render Blueprint for a reproducible production-shaped deployment.
-# It provisions two Postgres databases because Rails and Solid Queue migrate
-# independently. No real credentials belong in this file.
+# The free-tier Blueprint uses one Postgres database so it can deploy in
+# Render workspaces that allow only one active free database. Rails and Solid
+# Queue still use separate connection roles in the app configuration, but
+# point to the same database here. A paid deployment can add a second DB.
+# No real credentials belong in this file.
 databases:
   - name: sdl-postgres
     databaseName: sdl
     user: sdl
-    plan: free
-    postgresMajorVersion: "16"
-  - name: sdl-rails-queue
-    databaseName: sdl_queue
-    user: sdl_queue
     plan: free
     postgresMajorVersion: "16"
 
@@ -61,7 +59,7 @@ services:
           property: connectionString
       - key: QUEUE_DATABASE_URL
         fromDatabase:
-          name: sdl-rails-queue
+          name: sdl-postgres
           property: connectionString
       - key: REDIS_URL
         fromService:

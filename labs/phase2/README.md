@@ -114,9 +114,12 @@ bulkheads help — and when they make p99 worse.
 
 ## Reproducible Render deployment
 
-`render.yaml` is a Blueprint, not a live deployment. It provisions two
-PostgreSQL databases (Rails primary and Solid Queue), Redis, and both web
-services. In the Render dashboard:
+`render.yaml` is a Blueprint, not a live deployment. Its free-tier profile
+provisions one PostgreSQL database shared by Rails and Solid Queue, Redis, and
+both web services. Sharing the database keeps the educational deployment
+within Render's one-free-Postgres limit. For a higher-isolation production
+profile, provision a second Postgres database and point `QUEUE_DATABASE_URL`
+to it. In the Render dashboard:
 
 1. Create a new Blueprint from this repository and select `labs/phase2/render.yaml`.
 2. Review the generated resources and choose plans appropriate for your account.
