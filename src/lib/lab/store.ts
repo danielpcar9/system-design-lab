@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Locale } from "@/lib/i18n/locale";
+import type { CostProfileId } from "./cost-profiles";
+import type { Mastery } from "./curriculum";
 import { DEFAULT_DECISIONS } from "./decisions";
 import type {
   Decisions,
@@ -12,11 +14,18 @@ import type {
   LabNode,
   Lens,
   LoadInputs,
+  StackId,
   StudioMode,
   SyncKind,
 } from "./types";
 
 type Positions = Record<string, { x: number; y: number }>;
+
+export type PracticeRecord = {
+  status: Mastery;
+  attempts: number;
+  failHistory: string[][];
+};
 
 type LabState = {
   locale: Locale;
@@ -41,6 +50,10 @@ type LabState = {
   envelope: { dau: number; reqPerUser: number; peakX: number };
   cheatOpen: boolean;
   cheatId: string | null;
+  practiceStack: StackId;
+  practiceProgress: Record<string, PracticeRecord>;
+  practiceDrafts: Record<string, string>;
+  costProfile: CostProfileId;
   setLocale: (locale: Locale) => void;
   setLens: (lens: Lens) => void;
   setInspectorTab: (tab: InspectorTab) => void;
@@ -63,6 +76,11 @@ type LabState = {
   setEnvelope: (partial: { dau?: number; reqPerUser?: number; peakX?: number }) => void;
   setCheatOpen: (open: boolean) => void;
   setCheatId: (id: string | null) => void;
+  setPracticeStack: (stack: StackId) => void;
+  setPracticeDraft: (key: string, code: string) => void;
+  recordPracticeResult: (exerciseId: string, passed: boolean, failedIds: string[]) => void;
+  resetPractice: (exerciseId: string) => void;
+  setCostProfile: (id: CostProfileId) => void;
 };
 
 export const useLabStore = create<LabState>()(
@@ -90,6 +108,10 @@ export const useLabStore = create<LabState>()(
       envelope: { dau: 1_000_000, reqPerUser: 20, peakX: 3 },
       cheatOpen: false,
       cheatId: null,
+      practiceStack: "fastapi",
+      practiceProgress: {},
+      practiceDrafts: {},
+      costProfile: "small",
       setLocale: (locale) => set({ locale }),
       setLens: (lens) => set({ lens }),
       setInspectorTab: (tab) => set({ inspectorTab: tab }),
@@ -144,6 +166,37 @@ export const useLabStore = create<LabState>()(
         set((state) => ({ envelope: { ...state.envelope, ...partial } })),
       setCheatOpen: (open) => set({ cheatOpen: open }),
       setCheatId: (id) => set({ cheatId: id, cheatOpen: true }),
+      setPracticeStack: (stack) => set({ practiceStack: stack }),
+      setPracticeDraft: (key, code) =>
+        set((state) => ({ practiceDrafts: { ...state.practiceDrafts, [key]: code } })),
+      recordPracticeResult: (exerciseId, passed, failedIds) =>
+        set((state) => {
+          const current = state.practiceProgress[exerciseId] ?? {
+            status: "not-started" as Mastery,
+            attempts: 0,
+            failHistory: [] as string[][],
+          };
+          const failHistory = failedIds.length
+            ? [...current.failHistory, failedIds].slice(-8)
+            : current.failHistory;
+          return {
+            practiceProgress: {
+              ...state.practiceProgress,
+              [exerciseId]: {
+                status: passed ? "mastered" : "in-progress",
+                attempts: current.attempts + 1,
+                failHistory,
+              },
+            },
+          };
+        }),
+      resetPractice: (exerciseId) =>
+        set((state) => {
+          const next = { ...state.practiceProgress };
+          delete next[exerciseId];
+          return { practiceProgress: next };
+        }),
+      setCostProfile: (id) => set({ costProfile: id }),
     }),
     {
       name: "sdl-lab-v5",
@@ -160,6 +213,10 @@ export const useLabStore = create<LabState>()(
         interviewLevel: state.interviewLevel,
         interviewTrack: state.interviewTrack,
         envelope: state.envelope,
+        practiceStack: state.practiceStack,
+        practiceProgress: state.practiceProgress,
+        practiceDrafts: state.practiceDrafts,
+        costProfile: state.costProfile,
       }),
     },
   ),
@@ -175,4 +232,15 @@ export function extraOf(map: Record<string, LabNode[]>, id: string): LabNode[] {
 
 export function extraEdgesOf(map: Record<string, LabEdge[]>, id: string): LabEdge[] {
   return map[id] ?? [];
+}
+
+export function draftKey(exerciseId: string, stack: StackId): string {
+  return `${exerciseId}:${stack}`;
+}
+
+export function practiceStatusOf(
+  progress: Record<string, PracticeRecord>,
+  exerciseId: string,
+): Mastery {
+  return progress[exerciseId]?.status ?? "not-started";
 }

@@ -156,6 +156,8 @@ function NodeCard({
       type="button"
       data-family={meta.family}
       data-selected={selected ? "true" : "false"}
+      aria-label={meta.title}
+      aria-pressed={selected}
       onClick={() => {
         if (skipClick.current) {
           skipClick.current = false;

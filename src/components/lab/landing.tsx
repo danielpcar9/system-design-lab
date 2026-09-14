@@ -2,11 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { DualStackViewer } from "@/components/lab/viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { familyHint, familyTitle, localizeLesson, localizeScenario, t, UI } from "@/lib/i18n";
+import { familyHint, familyTitle, fill, localizeLesson, localizeScenario, t, UI } from "@/lib/i18n";
+import { nextGlobal, scenarioMastery, type Mastery } from "@/lib/lab/curriculum";
 import { lessonFor } from "@/lib/lab/lessons";
 import { FAMILY_META } from "@/lib/lab/meta";
 import { SCENARIOS } from "@/lib/lab/scenarios";
-import { useLabStore } from "@/lib/lab/store";
+import { practiceStatusOf, useLabStore } from "@/lib/lab/store";
 import type { KindFamily, StudioMode } from "@/lib/lab/types";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,9 @@ export function Landing() {
   const tab = useLabStore((s) => s.inspectorTab);
   const setTab = useLabStore((s) => s.setInspectorTab);
   const setStudioMode = useLabStore((s) => s.setStudioMode);
+  const progress = useLabStore((s) => s.practiceProgress);
+  const statusOf = (id: string) => practiceStatusOf(progress, id);
+  const continueExercise = nextGlobal(statusOf);
   const authLesson = localizeLesson(lessonFor("auth"), locale);
   const classic = SCENARIOS.filter((s) => s.track === "classic").map((s) =>
     localizeScenario(s, locale),
@@ -78,6 +82,17 @@ export function Landing() {
                 {t(locale, UI.aiInterviewCta)}
               </Link>
             </Button>
+            {continueExercise && (
+              <Button variant="secondary" asChild>
+                <Link
+                  to="/lab/$scenarioId"
+                  params={{ scenarioId: continueExercise.scenarioId }}
+                  onClick={() => setStudioMode("practice")}
+                >
+                  {fill(t(locale, UI.practiceContinue), { title: t(locale, continueExercise.title) })}
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
 
@@ -176,6 +191,7 @@ export function Landing() {
               brief={s.brief}
               load={s.load}
               openLabel={t(locale, UI.openCanvas)}
+              mastery={scenarioMastery(s.id, statusOf)}
             />
           ))}
         </div>
@@ -192,6 +208,7 @@ export function Landing() {
               brief={s.brief}
               load={s.load}
               openLabel={t(locale, UI.openCanvas)}
+              mastery={scenarioMastery(s.id, statusOf)}
               agentic
             />
           ))}
@@ -209,6 +226,7 @@ function LabCard({
   load,
   openLabel,
   agentic,
+  mastery,
 }: {
   id: string;
   kicker: string;
@@ -217,7 +235,15 @@ function LabCard({
   load: string;
   openLabel: string;
   agentic?: boolean;
+  mastery: Mastery;
 }) {
+  const locale = useLabStore((s) => s.locale);
+  const masteryLabel =
+    mastery === "mastered"
+      ? t(locale, UI.practiceMastered)
+      : mastery === "in-progress"
+        ? t(locale, UI.practiceInProgress)
+        : t(locale, UI.practiceNotStarted);
   return (
     <Link
       to="/lab/$scenarioId"
@@ -227,8 +253,18 @@ function LabCard({
         agentic ? "border-violet/35" : "border-border",
       )}
     >
-      <p className={cn("text-xs uppercase tracking-wide", agentic ? "text-violet" : "text-subtle")}>
-        {kicker}
+      <p className="flex items-center justify-between gap-2">
+        <span className={cn("text-xs uppercase tracking-wide", agentic ? "text-violet" : "text-subtle")}>
+          {kicker}
+        </span>
+        <span
+          className={cn(
+            "text-[10px] uppercase tracking-wide",
+            mastery === "mastered" ? "text-ok" : mastery === "in-progress" ? "text-sun" : "text-subtle",
+          )}
+        >
+          {masteryLabel}
+        </span>
       </p>
       <h3 className="mt-2 font-serif text-2xl italic text-fg">{prompt}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted">{brief}</p>

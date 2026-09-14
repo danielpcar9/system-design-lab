@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { Button } from "@/components/ui/button";
 import { fill, localizeBottleneck, localizeDiagnosis, t, UI } from "@/lib/i18n";
+import { COST_PROFILES, scaleEducationalCost, type CostProfileId } from "@/lib/lab/cost-profiles";
 import { KIND_META } from "@/lib/lab/meta";
 import { simulate } from "@/lib/lab/simulate";
 import { useLabStore } from "@/lib/lab/store";
@@ -107,6 +108,8 @@ export function StressPanel({
   const load = useLabStore((s) => s.load);
   const setLoad = useLabStore((s) => s.setLoad);
   const decisions = useLabStore((s) => s.decisions);
+  const costProfile = useLabStore((s) => s.costProfile);
+  const setCostProfile = useLabStore((s) => s.setCostProfile);
   const [simulating, setSimulating] = useState(false);
   const [hasSimulated, setHasSimulated] = useState(false);
   const [tick, setTick] = useState(24);
@@ -147,6 +150,9 @@ export function StressPanel({
   const series = result.series.slice(0, simulating ? tick : 24);
   const diagnoses = result.diagnoses.map((d) => localizeDiagnosis(d, locale));
   const bottleneck = localizeBottleneck(result.bottleneck, locale);
+  const profile = COST_PROFILES[costProfile];
+  const educationalCost = scaleEducationalCost(result.cost, costProfile);
+  const educationalAi = scaleEducationalCost(result.aiCost, costProfile);
 
   return (
     <div className="flex flex-col gap-5 px-4 py-4">
@@ -211,6 +217,28 @@ export function StressPanel({
         />
       )}
 
+      <div>
+        <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.costProfile)}</p>
+        <div className="mt-2 grid grid-cols-3 gap-2" role="radiogroup" aria-label={t(locale, UI.costProfile)}>
+          {(Object.keys(COST_PROFILES) as CostProfileId[]).map((id) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={costProfile === id}
+              onClick={() => setCostProfile(id)}
+              className={cn(
+                "rounded-lg border p-3 text-left text-xs",
+                costProfile === id ? "border-accent bg-elevated text-fg" : "border-border text-muted",
+              )}
+            >
+              {t(locale, COST_PROFILES[id].label)}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs leading-relaxed text-subtle">{t(locale, profile.note)}</p>
+      </div>
+
       <Button
         onClick={() => {
           setHasSimulated(true);
@@ -251,7 +279,7 @@ export function StressPanel({
             <Metric label="p50" value={`${result.p50} ms`} warn={result.p50 > 80} ok={result.p50 <= 40} />
             <Metric label="p95" value={`${result.p95} ms`} warn={result.p95 > 180} ok={result.p95 <= 90} />
             <Metric label="p99" value={`${result.p99} ms`} warn={result.p99 > 250} ok={result.p99 <= 120} />
-            <Metric label={t(locale, UI.infraApis)} value={`$${result.cost.toLocaleString()}/mo`} />
+            <Metric label={t(locale, UI.infraApis)} value={`$${educationalCost.toLocaleString()}/mo`} />
             <Metric
               label={t(locale, UI.availability)}
               value={`${result.availability}%`}
@@ -274,7 +302,7 @@ export function StressPanel({
                 />
                 <Metric
                   label={t(locale, UI.aiApis)}
-                  value={`$${result.aiCost.toLocaleString()}/mo`}
+                  value={`$${educationalAi.toLocaleString()}/mo`}
                   warn={result.aiCost > 80_000}
                   accent="sun"
                 />
@@ -341,6 +369,27 @@ export function StressPanel({
               </li>
             ))}
           </ul>
+
+          <div className="grid grid-cols-2 gap-2 text-xs text-muted">
+            <p>{t(locale, UI.costPostgres)} · {profile.postgres}</p>
+            <p>{t(locale, UI.costRedis)} · {profile.redis}</p>
+            <p>{t(locale, UI.costWorkers)} · {profile.workers}</p>
+            <p>{t(locale, UI.costApi)} · {profile.api}</p>
+          </div>
+          <p className="text-xs leading-relaxed text-subtle">{t(locale, UI.costProfileNote)}</p>
+
+          <details className="rounded-lg border border-border bg-elevated p-4">
+            <summary className="cursor-pointer text-sm font-medium text-fg">
+              {t(locale, UI.patternTitle)}
+            </summary>
+            <ul className="mt-3 list-disc space-y-2 pl-4 text-sm leading-relaxed text-muted">
+              <li>{t(locale, UI.patternTimeouts)}</li>
+              <li>{t(locale, UI.patternRetries)}</li>
+              <li>{t(locale, UI.patternIdempotency)}</li>
+              <li>{t(locale, UI.patternBreaker)}</li>
+              <li>{t(locale, UI.patternBulkhead)}</li>
+            </ul>
+          </details>
 
           <details className="rounded-lg border border-border bg-elevated p-4">
             <summary className="cursor-pointer text-sm font-medium text-fg">

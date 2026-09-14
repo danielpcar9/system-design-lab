@@ -26,7 +26,16 @@ export function ModeTabs({
           type="button"
           role="tab"
           aria-selected={value === id}
+          tabIndex={value === id ? 0 : -1}
           onClick={() => onChange(id)}
+          onKeyDown={(event) => {
+            if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+            event.preventDefault();
+            const index = MODES.indexOf(value);
+            const delta = event.key === "ArrowRight" ? 1 : -1;
+            const next = MODES[(index + delta + MODES.length) % MODES.length];
+            onChange(next);
+          }}
           className={cn(
             "h-8 shrink-0 rounded-sm px-3 text-xs font-medium transition-[color,background-color] duration-150",
             value === id ? "bg-surface text-fg" : "text-muted hover:text-fg",

@@ -28,6 +28,12 @@ export function AppShell({
 
   return (
     <div className="min-h-dvh bg-bg text-fg">
+      <a
+        href="#main"
+        className="skip-link"
+      >
+        {t(locale, UI.skipToMain)}
+      </a>
       <header className="sticky top-0 z-20 border-b border-border bg-bg/92">
         <div className="mx-auto flex max-w-7xl min-w-0 items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0 flex items-center gap-3">
@@ -64,7 +70,7 @@ export function AppShell({
           </div>
         </div>
       </header>
-      {children}
+      <main id="main">{children}</main>
       <CheatSheetDock />
     </div>
   );

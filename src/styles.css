@@ -89,6 +89,26 @@
     background: rgb(46 97 246 / 0.28);
     color: var(--color-fg);
   }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -3.5rem;
+    z-index: 60;
+    border-radius: 0.5rem;
+    background: var(--color-elevated);
+    padding: 0.5rem 0.75rem;
+    color: var(--color-fg);
+  }
+
+  .skip-link:focus {
+    top: 0.75rem;
+  }
 }
 
 @keyframes sdl-rise {
