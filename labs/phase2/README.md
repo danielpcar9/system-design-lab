@@ -76,6 +76,9 @@ bin/rails test
 ```
 
 Solid Queue runs inside Puma when `SOLID_QUEUE_IN_PUMA=true` (Compose production).
+The Rails entrypoint prepares its queue tables idempotently from
+`db/queue_schema.rb`; this is required because the lab uses a separate
+`rails_lab` database for the Rails primary and queue connections.
 
 ## Benchmark (educational)
 

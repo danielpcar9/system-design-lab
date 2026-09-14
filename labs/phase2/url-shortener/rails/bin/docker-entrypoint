@@ -6,5 +6,6 @@ if [ -z "$SECRET_KEY_BASE" ]; then
 fi
 
 ./bin/rails db:prepare
+./bin/rails solid_queue:prepare
 
 exec "${@}"
