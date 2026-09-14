@@ -173,6 +173,48 @@ export function WalkthroughPanel({
         <Button onClick={onPractice}>{t(locale, UI.qaOpenPractice)}</Button>
       )}
 
+      {current.id === "review" && (
+        <section className="flex flex-col gap-4" aria-labelledby="review-task-title">
+          <div>
+            <p id="review-task-title" className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.reviewDiffTitle)}</p>
+            <pre className="mt-2 overflow-x-auto rounded-md border border-border bg-bg p-3 font-mono text-[11px] leading-relaxed text-muted">{`+ code = generate_code()
+db.insert(code: code, url: params[:url])
+render json: { code: code, url: params[:url] }, status: 201`}</pre>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.reviewChecklistTitle)}</p>
+            <div className="mt-2 space-y-2">
+              {(["reviewCheckOne", "reviewCheckTwo", "reviewCheckThree"] as const).map((key) => {
+                const id = `review-${key}`;
+                return (
+                  <label key={id} className="flex items-start gap-2 text-sm leading-relaxed text-muted">
+                    <input type="checkbox" checked={Boolean(checks[id])} onChange={() => toggle(id)} className="mt-1 accent-[var(--accent)]" />
+                    <span>{t(locale, UI[key])}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {current.id === "ship" && (
+        <section aria-labelledby="ship-task-title">
+          <p id="ship-task-title" className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.shipChecklistTitle)}</p>
+          <div className="mt-2 space-y-2">
+            {(["shipCheckOne", "shipCheckTwo", "shipCheckThree"] as const).map((key) => {
+              const id = `ship-${key}`;
+              return (
+                <label key={id} className="flex items-start gap-2 text-sm leading-relaxed text-muted">
+                  <input type="checkbox" checked={Boolean(checks[id])} onChange={() => toggle(id)} className="mt-1 accent-[var(--accent)]" />
+                  <span>{t(locale, UI[key])}</span>
+                </label>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {(current.id === "fastapi" || current.id === "rails" || current.id === "jaeger") && (
         <div className="flex flex-col gap-3">
           <label className="block text-xs uppercase tracking-wide text-subtle">
