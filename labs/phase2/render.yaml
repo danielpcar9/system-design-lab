@@ -22,8 +22,8 @@ services:
   - type: web
     name: sdl-fastapi
     runtime: docker
-    dockerfilePath: ./url-shortener/fastapi/Dockerfile
-    dockerContext: ./url-shortener/fastapi
+    dockerfilePath: ./labs/phase2/url-shortener/fastapi/Dockerfile
+    dockerContext: ./labs/phase2/url-shortener/fastapi
     healthCheckPath: /health
     plan: free
     envVars:
@@ -50,8 +50,8 @@ services:
   - type: web
     name: sdl-rails
     runtime: docker
-    dockerfilePath: ./url-shortener/rails/Dockerfile
-    dockerContext: ./url-shortener/rails
+    dockerfilePath: ./labs/phase2/url-shortener/rails/Dockerfile
+    dockerContext: ./labs/phase2/url-shortener/rails
     healthCheckPath: /health
     plan: free
     envVars:

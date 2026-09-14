@@ -3,6 +3,11 @@
 URL Shortener as two comparable APIs: FastAPI and Rails 8.1 API-only, sharing
 [`url-shortener/CONTRACT.md`](url-shortener/CONTRACT.md).
 
+If the infrastructure feels unfamiliar, start with
+[`LEARNING_GUIDE.md`](LEARNING_GUIDE.md). It explains the request flow and the
+tradeoffs behind PostgreSQL, Redis, Solid Queue, Docker, OpenTelemetry, and
+Jaeger before asking you to change the code.
+
 The services share one PostgreSQL server but use separate databases
 (`fastapi_lab`, `rails_lab`, and `rails_queue_lab`). This keeps each framework's
 migrations independent and gives Solid Queue its own database while the HTTP
@@ -132,10 +137,10 @@ and `SECRET_KEY_BASE` are injected by Render rather than committed.
 Structured JSON logs on FastAPI (`msg`, `path`, `status`, `ms`, `request_id`).
 Rails tags `request_id` on STDOUT.
 
-This lab does **not** vendor OpenTelemetry. To see traces locally, run an OTLP
-collector (Jaeger all-in-one) and add `opentelemetry-instrumentation-fastapi`
-yourself; without an exporter the code is a structured-log stand-in so the
-lesson is still visible in `docker compose logs fastapi`.
+The SDK integrations are included but exporters remain configurable. Compose
+enables OTLP and sends spans to Jaeger; production defaults to no exporter
+until you configure a collector. Without an exporter, structured logs remain a
+useful low-cost stand-in in `docker compose logs fastapi`.
 
 ## What this environment cannot run
 
