@@ -16,6 +16,8 @@ export type WalkthroughStepId =
   | "exercise"
   | "fastapi"
   | "rails"
+  | "review"
+  | "ship"
   | "jaeger"
   | "redis"
   | "bench";
@@ -75,6 +77,38 @@ export const WALKTHROUGH: WalkthroughStep[] = [
     expect: {
       en: "Same 201 / 422 / 302. A second POST without Idempotency-Key mints a new code.",
       es: "Mismos 201 / 422 / 302. Un segundo POST sin Idempotency-Key acuña un código nuevo.",
+    },
+  },
+  {
+    id: "review",
+    title: { en: "Review the change", es: "Revisa el cambio" },
+    why: {
+      en: "Software engineering is not only making code work. It is making the change understandable and safe for the next person.",
+      es: "La ingeniería de software no es solo hacer que el código funcione. Es hacer que el cambio sea entendible y seguro para la siguiente persona.",
+    },
+    do: {
+      en: "Compare the Rails and FastAPI answers. Leave two review comments: one correctness question and one maintainability suggestion.",
+      es: "Compara las respuestas de Rails y FastAPI. Deja dos comentarios de review: una pregunta de corrección y una sugerencia de mantenimiento.",
+    },
+    expect: {
+      en: "You can separate a bug from a preference, and ask for evidence instead of rewriting the author's code.",
+      es: "Puedes separar un bug de una preferencia y pedir evidencia sin reescribir el código del autor.",
+    },
+  },
+  {
+    id: "ship",
+    title: { en: "Ship with evidence", es: "Haz ship con evidencia" },
+    why: {
+      en: "A feature is not finished when it works on your laptop. It is finished when you can verify it, observe it, and recover from failure.",
+      es: "Una feature no termina cuando funciona en tu laptop. Termina cuando puedes verificarla, observarla y recuperarte de un fallo.",
+    },
+    do: {
+      en: "Collect the contract result, health response, request id, trace, and one rollback or next-measurement decision.",
+      es: "Reúne el resultado del contrato, health, request id, traza y una decisión de rollback o siguiente medición.",
+    },
+    expect: {
+      en: "Your work can be handed to another engineer with enough evidence to trust or challenge it.",
+      es: "Puedes entregar tu trabajo a otro ingeniero con suficiente evidencia para confiar en él o cuestionarlo.",
     },
   },
   {

@@ -182,6 +182,60 @@ export function Landing() {
       </section>
 
       <section className="border-b border-border bg-surface">
+        <div className="mx-auto max-w-7xl px-4 py-14">
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.learnThenShipKicker)}</p>
+            <h2 className="mt-2 font-serif text-3xl italic">{t(locale, UI.learnThenShipTitle)}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{t(locale, UI.learnThenShipLead)}</p>
+          </div>
+          <div className="mt-8 grid gap-8 lg:grid-cols-2">
+            <div className="border-t-2 border-cobalt pt-4">
+              <p className="text-xs uppercase tracking-wide text-cobalt">{t(locale, UI.learnPhaseLabel)}</p>
+              <h3 className="mt-2 font-serif text-2xl italic text-fg">{t(locale, UI.learnPhaseTitle)}</h3>
+              <ol className="mt-4 space-y-3 text-sm text-muted">
+                {(["learnPhaseOne", "learnPhaseTwo", "learnPhaseThree"] as const).map((key, index) => (
+                  <li key={key} className="flex gap-3 leading-relaxed">
+                    <span className="font-mono text-xs text-cobalt">0{index + 1}</span>
+                    <span>{t(locale, UI[key])}</span>
+                  </li>
+                ))}
+              </ol>
+              <Button className="mt-5" variant="secondary" asChild>
+                <Link
+                  to="/lab/$scenarioId"
+                  params={{ scenarioId: "url-shortener" }}
+                  onClick={() => setStudioMode("design")}
+                >
+                  {t(locale, UI.startLearning)}
+                </Link>
+              </Button>
+            </div>
+            <div className="border-t-2 border-accent pt-4">
+              <p className="text-xs uppercase tracking-wide text-accent">{t(locale, UI.workPhaseLabel)}</p>
+              <h3 className="mt-2 font-serif text-2xl italic text-fg">{t(locale, UI.workPhaseTitle)}</h3>
+              <ol className="mt-4 space-y-3 text-sm text-muted">
+                {(["workPhaseOne", "workPhaseTwo", "workPhaseThree"] as const).map((key, index) => (
+                  <li key={key} className="flex gap-3 leading-relaxed">
+                    <span className="font-mono text-xs text-accent">0{index + 1}</span>
+                    <span>{t(locale, UI[key])}</span>
+                  </li>
+                ))}
+              </ol>
+              <Button className="mt-5" asChild>
+                <Link
+                  to="/lab/$scenarioId"
+                  params={{ scenarioId: "url-shortener" }}
+                  onClick={() => setStudioMode("walkthrough")}
+                >
+                  {t(locale, UI.startWorkday)}
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-surface">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 lg:grid-cols-[1fr_1.2fr]">
           <div>
             <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.flowGuideKicker)}</p>
