@@ -30,6 +30,7 @@ from app.faults import postgres_down, redis_down, worker_down
 from app.reliability import Bulkhead, CircuitBreaker
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+DB_SCHEMA = os.getenv("DB_SCHEMA", "public")
 REDIS_URL = os.getenv("REDIS_URL")
 CACHE_TTL = 300
 REDIS_TIMEOUT = 0.05
@@ -92,7 +93,7 @@ def _db_connection():
     return psycopg.connect(
         _database_url(),
         connect_timeout=POSTGRES_TIMEOUT,
-        options="-c statement_timeout=2000",
+        options=f"-c statement_timeout=2000 -c search_path={DB_SCHEMA},public",
     )
 
 
@@ -116,6 +117,7 @@ def init_db() -> None:
     if not DATABASE_URL:
         return
     with _db_connection() as connection:
+        connection.execute(f'CREATE SCHEMA IF NOT EXISTS "{DB_SCHEMA}"')
         connection.execute(
             """
             CREATE TABLE IF NOT EXISTS links (

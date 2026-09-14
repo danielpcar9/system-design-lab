@@ -29,6 +29,8 @@ services:
         fromDatabase:
           name: sdl-postgres
           property: connectionString
+      - key: DB_SCHEMA
+        value: fastapi
       - key: REDIS_URL
         fromService:
           type: redis
@@ -61,6 +63,10 @@ services:
         fromDatabase:
           name: sdl-postgres
           property: connectionString
+      - key: RAILS_SCHEMA
+        value: rails
+      - key: QUEUE_SCHEMA
+        value: solid_queue
       - key: REDIS_URL
         fromService:
           type: redis

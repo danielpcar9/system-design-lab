@@ -5,6 +5,11 @@ if [ -z "$SECRET_KEY_BASE" ]; then
   export SECRET_KEY_BASE="lab-dev-secret-not-for-production"
 fi
 
+# Render's free tier uses one PostgreSQL database for FastAPI, Rails, and
+# Solid Queue. Create isolated schemas before migrations so identical table
+# names (for example, links) do not collide. With Compose the defaults are
+# public and these statements are harmless.
+./bin/rails runner 'schemas = [ENV.fetch("RAILS_SCHEMA", "public"), ENV.fetch("QUEUE_SCHEMA", "public")].uniq; schemas.each { |schema| raise "invalid schema" unless schema.match?(/\A[a-zA-Z_][a-zA-Z0-9_]*\z/); ActiveRecord::Base.connection.execute("CREATE SCHEMA IF NOT EXISTS #{schema}") }'
 ./bin/rails db:prepare
 
 exec "${@}"

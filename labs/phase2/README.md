@@ -115,11 +115,12 @@ bulkheads help — and when they make p99 worse.
 ## Reproducible Render deployment
 
 `render.yaml` is a Blueprint, not a live deployment. Its free-tier profile
-provisions one PostgreSQL database shared by Rails and Solid Queue, Redis, and
-both web services. Sharing the database keeps the educational deployment
+provisions one PostgreSQL database shared by Rails, FastAPI, and Solid Queue,
+Redis, and both web services. Separate PostgreSQL schemas (`fastapi`, `rails`,
+and `solid_queue`) prevent table-name collisions while keeping the deployment
 within Render's one-free-Postgres limit. For a higher-isolation production
-profile, provision a second Postgres database and point `QUEUE_DATABASE_URL`
-to it. In the Render dashboard:
+profile, provision separate databases and point `QUEUE_DATABASE_URL` to the
+queue database. In the Render dashboard:
 
 1. Create a new Blueprint from this repository and select `labs/phase2/render.yaml`.
 2. Review the generated resources and choose plans appropriate for your account.

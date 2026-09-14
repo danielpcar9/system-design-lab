@@ -20,8 +20,10 @@ production:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
     database: <%= ENV.fetch("POSTGRES_DB", "lab") %>
+    schema_search_path: <%= ENV.fetch("RAILS_SCHEMA", "public") %>
   queue:
     <<: *default
     url: <%= ENV["QUEUE_DATABASE_URL"] %>
     database: <%= ENV.fetch("POSTGRES_QUEUE_DB", "lab_queue") %>
+    schema_search_path: <%= ENV.fetch("QUEUE_SCHEMA", "public") %>
     migrations_paths: db/queue_migrate
