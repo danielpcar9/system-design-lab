@@ -23,16 +23,21 @@ TARGETS = [
 ]
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, file, code, msg, headers, newurl):
+        return None
+
+
 def request(method: str, url: str, body: dict | None = None, follow: bool = True):
     data = None if body is None else json.dumps(body).encode()
     req = urllib.request.Request(url, data=data, method=method)
     if body is not None:
         req.add_header("content-type", "application/json")
     opener = urllib.request.build_opener(
-        urllib.request.HTTPRedirectHandler() if follow else urllib.request.BaseHandler()
+        urllib.request.HTTPRedirectHandler() if follow else NoRedirect()
     )
     try:
-        with urllib.request.urlopen(req, timeout=5) as response:
+        with opener.open(req, timeout=5) as response:
             raw = response.read()
             parsed = json.loads(raw) if raw and "application/json" in response.headers.get("content-type", "") else None
             return response.status, dict(response.headers), parsed
@@ -61,8 +66,8 @@ def check(base: str) -> None:
     code = created["code"]
     req = urllib.request.Request(f"{base}/r/{code}", method="GET")
     try:
-        urllib.request.urlopen(req, timeout=5)
-        raise AssertionError(f"{base} followed the redirect")
+        urllib.request.build_opener(NoRedirect()).open(req, timeout=5)
+        raise AssertionError(f"{base} did not return a redirect error")
     except urllib.error.HTTPError as err:
         assert err.code == 302, (base, err.code)
         assert err.headers.get("Location") == "https://example.com/contract"
