@@ -17,15 +17,15 @@ const LEARNING_PATH: Array<{
   number: string;
   title: keyof typeof UI;
   body: keyof typeof UI;
+  done: keyof typeof UI;
   scenarioId: string;
   mode: StudioMode;
 }> = [
-  { number: "01", title: "pathContract", body: "pillar1Body", scenarioId: "url-shortener", mode: "design" },
-  { number: "02", title: "pathData", body: "pillar2Body", scenarioId: "url-shortener", mode: "decisions" },
-  { number: "03", title: "pathScale", body: "pillar3Body", scenarioId: "url-shortener", mode: "stress" },
-  { number: "04", title: "pathCode", body: "practiceLead", scenarioId: "url-shortener", mode: "practice" },
-  { number: "05", title: "pathAgentic", body: "pillar4Body", scenarioId: "rag-support", mode: "design" },
-  { number: "06", title: "pathInterview", body: "practiceExercise", scenarioId: "rag-support", mode: "interview" },
+  { number: "01", title: "pathCanvas", body: "pathCanvasBody", done: "pathCanvasDone", scenarioId: "url-shortener", mode: "design" },
+  { number: "02", title: "pathPractice", body: "pathPracticeBody", done: "pathPracticeDone", scenarioId: "url-shortener", mode: "practice" },
+  { number: "03", title: "pathStress", body: "pathStressBody", done: "pathStressDone", scenarioId: "url-shortener", mode: "stress" },
+  { number: "04", title: "pathDecisions", body: "pathDecisionsBody", done: "pathDecisionsDone", scenarioId: "url-shortener", mode: "decisions" },
+  { number: "05", title: "pathInterview", body: "pathInterviewBody", done: "pathInterviewDone", scenarioId: "url-shortener", mode: "interview" },
 ];
 
 export function Landing() {
@@ -145,11 +145,15 @@ export function Landing() {
           </div>
           <ol className="mt-8 divide-y divide-border border-y border-border">
             {LEARNING_PATH.map((step) => (
-              <li key={step.number} className="grid gap-3 py-5 sm:grid-cols-[4rem_1fr_auto] sm:items-center">
-                <span className="font-mono text-sm text-violet">{step.number}</span>
+              <li key={step.number} className="grid gap-4 py-6 sm:grid-cols-[4rem_1fr_auto] sm:items-start">
+                <span className="font-mono text-sm text-violet">{step.number} / 05</span>
                 <div>
                   <h3 className="font-serif text-xl italic text-fg">{t(locale, UI[step.title])}</h3>
                   <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">{t(locale, UI[step.body])}</p>
+                  <p className="mt-3 max-w-2xl text-xs leading-relaxed text-subtle">
+                    <span className="font-medium text-fg">{t(locale, UI.pathDoneLabel)}:</span>{" "}
+                    {t(locale, UI[step.done])}
+                  </p>
                 </div>
                 <Button variant="secondary" size="sm" asChild>
                   <Link
@@ -163,6 +167,65 @@ export function Landing() {
               </li>
             ))}
           </ol>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <div className="border-l-2 border-accent pl-4">
+              <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.pathRuleLabel)}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{t(locale, UI.pathRuleBody)}</p>
+            </div>
+            <div className="border-l-2 border-violet pl-4">
+              <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.pathCoachLabel)}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{t(locale, UI.pathCoachBody)}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-surface">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 lg:grid-cols-[1fr_1.2fr]">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.flowGuideKicker)}</p>
+            <h2 className="mt-2 font-serif text-3xl italic">{t(locale, UI.flowGuideTitle)}</h2>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">{t(locale, UI.flowGuideLead)}</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {([
+              ["bg-blue-400", "flowReadTitle", "flowReadBody"],
+              ["bg-fail", "flowWriteTitle", "flowWriteBody"],
+              ["border border-dashed border-violet bg-violet/10", "flowAsyncTitle", "flowAsyncBody"],
+            ] as const).map(([swatch, title, body]) => (
+              <div key={title} className="border border-border bg-bg p-4">
+                <div className="flex items-center gap-2">
+                  <span className={cn("size-3 rounded-full", swatch)} />
+                  <h3 className="text-sm font-medium text-fg">{t(locale, UI[title])}</h3>
+                </div>
+                <p className="mt-3 text-xs leading-relaxed text-muted">{t(locale, UI[body])}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-bg">
+        <div className="mx-auto max-w-7xl px-4 py-14">
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.redirectLessonKicker)}</p>
+            <h2 className="mt-2 font-serif text-3xl italic">{t(locale, UI.redirectLessonTitle)}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{t(locale, UI.redirectLessonLead)}</p>
+          </div>
+          <div className="mt-8 grid gap-3 md:grid-cols-3">
+            {([
+              ["redirectStepOne", "redirectStepOneBody"],
+              ["redirectStepTwo", "redirectStepTwoBody"],
+              ["redirectStepThree", "redirectStepThreeBody"],
+            ] as const).map(([title, body], index) => (
+              <div key={title} className="border-t-2 border-border pt-4">
+                <p className="font-mono text-xs text-violet">0{index + 1}</p>
+                <h3 className="mt-2 text-sm font-medium text-fg">{t(locale, UI[title])}</h3>
+                <p className="mt-2 text-xs leading-relaxed text-muted">{t(locale, UI[body])}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
