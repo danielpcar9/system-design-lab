@@ -5,6 +5,12 @@ services:
       DATABASE_URL: postgresql://lab:lab@postgres:5432/fastapi_lab
       REDIS_URL: redis://redis:6379/0
       LAB_ENV: lab
+      OTEL_SERVICE_NAME: url-shortener-fastapi
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: none
     ports:
       - "58000:8000"
     depends_on:
@@ -12,6 +18,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
       interval: 5s
@@ -33,6 +41,12 @@ services:
       SOLID_QUEUE_IN_PUMA: "true"
       SECRET_KEY_BASE: lab-dev-secret-not-for-production
       PORT: "80"
+      OTEL_SERVICE_NAME: url-shortener-rails
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: none
     ports:
       - "53000:80"
     depends_on:
@@ -40,6 +54,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:80/health"]
       interval: 5s
@@ -70,6 +86,20 @@ services:
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 3s
+      timeout: 3s
+      retries: 10
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.60.0
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686" # Jaeger Web UI
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:14269/"]
+      interval: 5s
       timeout: 3s
       retries: 10
 

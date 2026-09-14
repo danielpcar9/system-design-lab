@@ -20,6 +20,7 @@ docker compose -f labs/phase2/docker-compose.yml up --build
 | Rails | http://localhost:53000 |
 | PostgreSQL | localhost:55432 |
 | Redis | localhost:56379 |
+| Jaeger UI | http://localhost:16686 |
 
 Smoke:
 
@@ -37,6 +38,19 @@ curl -s -D- -X POST http://localhost:53000/links \
 
 Copy [`./.env.example`](.env.example) if you want to inject `LAB_FAULTS=1`.
 Do not commit real secrets. `SECRET_KEY_BASE` in Compose is a dummy for the lab.
+
+Compose also starts Jaeger with OTLP HTTP and gRPC enabled. The APIs export
+traces only because Compose explicitly sets the OTEL variables; local unit
+tests and normal non-OTEL runs remain no-op. Open the Jaeger UI at
+`http://localhost:16686`, select `url-shortener-fastapi` or
+`url-shortener-rails`, then make a request to `/health`, `/links`, or `/r/:code`.
+
+To verify traces through Jaeger's API after making a request:
+
+```bash
+curl -s 'http://localhost:16686/api/services'
+curl -s 'http://localhost:16686/api/traces?service=url-shortener-fastapi&limit=5'
+```
 
 If you previously started this lab with an older Compose file that used one
 shared database, reset only this lab's volume before restarting:
@@ -92,6 +106,26 @@ python3 labs/phase2/bench/http_bench.py http://localhost:53000/health --requests
 Numbers change with laptop, Docker Desktop, cold cache, and GIL vs Puma threads.
 See [`RELIABILITY.md`](RELIABILITY.md) for when timeouts, retries, breakers, and
 bulkheads help — and when they make p99 worse.
+
+## Reproducible Render deployment
+
+`render.yaml` is a Blueprint, not a live deployment. It provisions two
+PostgreSQL databases (Rails primary and Solid Queue), Redis, and both web
+services. In the Render dashboard:
+
+1. Create a new Blueprint from this repository and select `labs/phase2/render.yaml`.
+2. Review the generated resources and choose plans appropriate for your account.
+3. Sync the Blueprint and wait for both `/health` endpoints to become ready.
+4. Confirm `LAB_ENV=production` and `LAB_FAULTS=0`; never enable lab faults there.
+5. Configure an external OTLP endpoint only if you have one. Leave the OTEL
+   exporter disabled otherwise; the app remains functional without a collector.
+6. Run the contract test against the deployed URLs using `FASTAPI_URL` and
+   `RAILS_URL` environment variables.
+
+Render deployment is intentionally not claimed as live from this repository:
+it requires the user's Render account and an explicit sync. The Blueprint is
+the reproducible artifact; `DATABASE_URL`, `QUEUE_DATABASE_URL`, `REDIS_URL`,
+and `SECRET_KEY_BASE` are injected by Render rather than committed.
 
 ## Observability
 

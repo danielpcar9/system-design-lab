@@ -1,10 +1,31 @@
-# Sketch only — do not put real credentials here.
-# Render/Fly/Railway are optional. Prefer Docker Compose for the lab.
+# Render Blueprint for a reproducible production-shaped deployment.
+# It provisions two Postgres databases because Rails and Solid Queue migrate
+# independently. No real credentials belong in this file.
+databases:
+  - name: sdl-postgres
+    databaseName: sdl
+    user: sdl
+    plan: free
+    postgresMajorVersion: "16"
+  - name: sdl-rails-queue
+    databaseName: sdl_queue
+    user: sdl_queue
+    plan: free
+    postgresMajorVersion: "16"
+
 services:
+  - type: redis
+    name: sdl-redis
+    plan: free
+    ipAllowList: []
+
   - type: web
     name: sdl-fastapi
     runtime: docker
     dockerfilePath: ./url-shortener/fastapi/Dockerfile
+    dockerContext: ./url-shortener/fastapi
+    healthCheckPath: /health
+    plan: free
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -19,3 +40,47 @@ services:
         value: production
       - key: LAB_FAULTS
         value: "0"
+      - key: OTEL_TRACES_EXPORTER
+        value: none
+      - key: OTEL_METRICS_EXPORTER
+        value: none
+      - key: OTEL_LOGS_EXPORTER
+        value: none
+
+  - type: web
+    name: sdl-rails
+    runtime: docker
+    dockerfilePath: ./url-shortener/rails/Dockerfile
+    dockerContext: ./url-shortener/rails
+    healthCheckPath: /health
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sdl-postgres
+          property: connectionString
+      - key: QUEUE_DATABASE_URL
+        fromDatabase:
+          name: sdl-rails-queue
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: sdl-redis
+          property: connectionString
+      - key: RAILS_ENV
+        value: production
+      - key: SOLID_QUEUE_IN_PUMA
+        value: "true"
+      - key: LAB_ENV
+        value: production
+      - key: LAB_FAULTS
+        value: "0"
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: OTEL_TRACES_EXPORTER
+        value: none
+      - key: OTEL_METRICS_EXPORTER
+        value: none
+      - key: OTEL_LOGS_EXPORTER
+        value: none

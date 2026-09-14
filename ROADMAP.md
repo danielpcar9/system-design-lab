@@ -23,10 +23,10 @@ Status after this pass. `[x]` shipped, `[~]` partial / environment-blocked, `[ ]
 - [x] Rails request tests written (need PostgreSQL + Ruby to execute)
 - [x] Compose healthchecks, `.env.example`, dummy `SECRET_KEY_BASE`
 - [x] Educational HTTP bench script
-- [~] Docker Compose end-to-end — **blocked here** (no Docker in this sandbox)
-- [~] Rails `bin/rails test` — **blocked here** (no Ruby)
-- [~] Live benchmark numbers — **blocked here** (no running containers)
-- [ ] Shared live contract test against `:58000` and `:53000` (script ready: `url-shortener/contract_test.py`)
+- [x] Docker Compose end-to-end — verified on a local Docker Desktop host
+- [~] Rails `bin/rails test` — request contract verified; full suite still requires an explicit local run
+- [x] Live benchmark numbers — captured comparatively on the same host
+- [x] Shared live contract test against `:58000` and `:53000`
 
 ## Phase 3 — Production-shaped lab
 
@@ -35,8 +35,8 @@ Status after this pass. `[x]` shipped, `[~]` partial / environment-blocked, `[ ]
 - [x] Injectable faults behind `LAB_FAULTS=1`
 - [x] Timeouts, retries, idempotency, breaker, bulkhead + educational copy
 - [x] Cost profiles small/medium/large in Stress (relative units)
-- [~] OpenTelemetry — documented as optional; no vendor SDK vendored
-- [ ] Render/Fly/Railway live deploy (see `labs/phase2/render.yaml` sketch)
+- [x] OpenTelemetry SDKs, optional export, request-id attributes, and local Jaeger collector configuration
+- [~] Render Blueprint — reproducible configuration is ready; live deploy still requires a Render account
 
 ## Explicit non-goals
 

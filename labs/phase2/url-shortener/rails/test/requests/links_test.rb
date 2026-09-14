@@ -50,8 +50,14 @@ class LinksTest < ActionDispatch::IntegrationTest
 
   test "exhausted code collisions return 409" do
     Link.create!(url: "https://example.com/a", code: "abc1234")
-    Link.stub(:mint_code, "abc1234") do
+    singleton = Link.singleton_class
+    singleton.alias_method :original_mint_code, :mint_code
+    singleton.define_method(:mint_code) { "abc1234" }
+    begin
       post "/links", params: { url: "https://example.com/b" }, as: :json
+    ensure
+      singleton.alias_method :mint_code, :original_mint_code
+      singleton.remove_method :original_mint_code
     end
 
     assert_response :conflict

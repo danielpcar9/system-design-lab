@@ -6,3 +6,10 @@ gem "solid_queue", "~> 1.2"
 gem "puma", ">= 6.0"
 gem "bootsnap", require: false
 gem "json", "~> 2.10"
+
+gem "opentelemetry-api", "~> 1.11"
+gem "opentelemetry-sdk", "~> 1.13"
+gem "opentelemetry-exporter-otlp", "~> 0.36"
+gem "opentelemetry-instrumentation-rails", "~> 0.42"
+gem "opentelemetry-instrumentation-pg", "~> 0.37"
+gem "opentelemetry-instrumentation-redis", "~> 0.29"

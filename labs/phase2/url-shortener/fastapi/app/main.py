@@ -22,6 +22,8 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.telemetry import setup_telemetry
+
 from app.codes import MAX_CODE_TRIES, generate_code
 from app.faults import delay as fault_delay
 from app.faults import postgres_down, redis_down, worker_down
@@ -251,6 +253,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title="URL Shortener Phase 2 Lab", lifespan=lifespan)
+setup_telemetry(app)
 
 
 @app.middleware("http")
@@ -258,6 +261,14 @@ async def request_context(request: Request, call_next):
     started = time.perf_counter()
     request_id = request.headers.get("x-request-id") or uuid.uuid4().hex[:16]
     request.state.request_id = request_id
+    try:
+        from opentelemetry import trace
+
+        span = trace.get_current_span()
+        if span.is_recording():
+            span.set_attribute("app.request_id", request_id)
+    except ImportError:
+        pass
     fault_delay()
     response = await call_next(request)
     response.headers["x-request-id"] = request_id

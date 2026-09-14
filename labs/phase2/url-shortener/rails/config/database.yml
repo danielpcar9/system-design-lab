@@ -18,8 +18,10 @@ test:
 production:
   primary:
     <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
     database: <%= ENV.fetch("POSTGRES_DB", "lab") %>
   queue:
     <<: *default
+    url: <%= ENV["QUEUE_DATABASE_URL"] %>
     database: <%= ENV.fetch("POSTGRES_QUEUE_DB", "lab_queue") %>
     migrations_paths: db/queue_migrate
