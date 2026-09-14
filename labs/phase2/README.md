@@ -3,6 +3,10 @@
 URL Shortener as two comparable APIs: FastAPI and Rails 8.1 API-only, sharing
 [`url-shortener/CONTRACT.md`](url-shortener/CONTRACT.md).
 
+The services share one PostgreSQL server but use separate databases (`fastapi_lab`
+and `rails_lab`). This keeps each framework's migrations independent while the
+HTTP contract remains comparable.
+
 ## Run with Docker Compose
 
 ```bash
@@ -33,6 +37,14 @@ curl -s -D- -X POST http://localhost:53000/links \
 Copy [`./.env.example`](.env.example) if you want to inject `LAB_FAULTS=1`.
 Do not commit real secrets. `SECRET_KEY_BASE` in Compose is a dummy for the lab.
 
+If you previously started this lab with an older Compose file that used one
+shared database, reset only this lab's volume before restarting:
+
+```bash
+docker compose -f labs/phase2/docker-compose.yml down -v
+docker compose -f labs/phase2/docker-compose.yml up --build
+```
+
 ## FastAPI without Docker
 
 In-memory unit tests (no PostgreSQL/Redis):
@@ -47,7 +59,7 @@ uv run uvicorn app.main:app --reload
 Integration (needs Compose env in the pytest process):
 
 ```bash
-DATABASE_URL=postgresql://lab:lab@127.0.0.1:55432/lab \
+DATABASE_URL=postgresql://lab:lab@127.0.0.1:55432/fastapi_lab \
 REDIS_URL=redis://127.0.0.1:56379/0 \
 PHASE2_INTEGRATION=1 uv run pytest
 ```

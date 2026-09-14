@@ -2,7 +2,7 @@ services:
   fastapi:
     build: ./url-shortener/fastapi
     environment:
-      DATABASE_URL: postgresql://lab:lab@postgres:5432/lab
+      DATABASE_URL: postgresql://lab:lab@postgres:5432/fastapi_lab
       REDIS_URL: redis://redis:6379/0
       LAB_ENV: lab
     ports:
@@ -27,8 +27,8 @@ services:
       DB_PORT: 5432
       POSTGRES_USER: lab
       POSTGRES_PASSWORD: lab
-      POSTGRES_DB: lab
-      POSTGRES_QUEUE_DB: lab
+      POSTGRES_DB: rails_lab
+      POSTGRES_QUEUE_DB: rails_lab
       REDIS_URL: redis://redis:6379/0
       SOLID_QUEUE_IN_PUMA: "true"
       SECRET_KEY_BASE: lab-dev-secret-not-for-production
@@ -56,6 +56,7 @@ services:
       - "55432:5432"
     volumes:
       - phase2-postgres:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/01-create-databases.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U lab -d lab"]
       interval: 3s
