@@ -3,3 +3,4 @@
 -- with Rails migrations.
 CREATE DATABASE fastapi_lab;
 CREATE DATABASE rails_lab;
+CREATE DATABASE rails_queue_lab;

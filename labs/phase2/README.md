@@ -3,9 +3,10 @@
 URL Shortener as two comparable APIs: FastAPI and Rails 8.1 API-only, sharing
 [`url-shortener/CONTRACT.md`](url-shortener/CONTRACT.md).
 
-The services share one PostgreSQL server but use separate databases (`fastapi_lab`
-and `rails_lab`). This keeps each framework's migrations independent while the
-HTTP contract remains comparable.
+The services share one PostgreSQL server but use separate databases
+(`fastapi_lab`, `rails_lab`, and `rails_queue_lab`). This keeps each framework's
+migrations independent and gives Solid Queue its own database while the HTTP
+contract remains comparable.
 
 ## Run with Docker Compose
 
@@ -76,9 +77,8 @@ bin/rails test
 ```
 
 Solid Queue runs inside Puma when `SOLID_QUEUE_IN_PUMA=true` (Compose production).
-The Rails entrypoint prepares its queue tables idempotently from
-`db/queue_schema.rb`; this is required because the lab uses a separate
-`rails_lab` database for the Rails primary and queue connections.
+Rails `db:prepare` loads `db/queue_schema.rb` into the dedicated
+`rails_queue_lab` database during container boot.
 
 ## Benchmark (educational)
 
