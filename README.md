@@ -10,10 +10,10 @@ UI is bilingual (**ES / EN**). Code, terminal commands, and architecture terms (
 
 - **Canvas** — drop clients, gateways, FastAPI services, SQL / NoSQL / Graph, Redis, Kafka, plus vector DBs, LLM gateways, sandboxes, and LangGraph machines.
 - **Under the hood** — Rack, callbacks, Pydantic, LiteLLM — and uv versus rv for the boot path.
-- **Stress test** — RPS, mix, data, tokens/request. Simulated p99, diagnoses that can add the missing box.
+- **Practice** — write a Rails or FastAPI answer against a per-scenario exercise. Visible + hidden source-inspection tests, persistent mastery, progressive hints. The browser never executes your snippet; `labs/phase2` is the real HTTP path.
+- **Stress test** — RPS, mix, data, tokens/request, plus small/medium/large educational cost profiles. Simulated p99, diagnoses that can add the missing box.
 - **Interview tracks** — Backend (CAP, sharding, cache, SPOF) and AI Engineer (context, routing, durable agent runs, LLM failure). Chromatic score cards at the end.
 - **Cheat sheets** — consistent hashing, rate limiting, RAG, model routing, context windows.
-- **Practice** — write a Rails or FastAPI answer, run a lightweight checkpoint, and keep attempts locally.
 
 ## Labs
 
@@ -22,7 +22,7 @@ UI is bilingual (**ES / EN**). Code, terminal commands, and architecture terms (
 
 ## Phase 2 backend lab
 
-The first real backend exercise lives in [`labs/phase2`](labs/phase2): one shared URL Shortener contract, a runnable FastAPI starter with tests, Rails implementation checkpoints, and PostgreSQL/Redis infrastructure through Docker Compose.
+The first real backend exercise lives in [`labs/phase2`](labs/phase2): one shared URL Shortener contract, FastAPI + Rails 8.1, PostgreSQL, Redis, Solid Queue, injectable faults, and an educational HTTP bench. Roadmap: [`ROADMAP.md`](ROADMAP.md).
 
 ## Stack
 

@@ -1,0 +1,21 @@
+# Sketch only — do not put real credentials here.
+# Render/Fly/Railway are optional. Prefer Docker Compose for the lab.
+services:
+  - type: web
+    name: sdl-fastapi
+    runtime: docker
+    dockerfilePath: ./url-shortener/fastapi/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sdl-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: sdl-redis
+          property: connectionString
+      - key: LAB_ENV
+        value: production
+      - key: LAB_FAULTS
+        value: "0"
