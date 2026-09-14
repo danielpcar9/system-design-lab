@@ -1,7 +1,7 @@
 namespace :solid_queue do
   desc "Create Solid Queue tables in the configured queue database when missing"
   task prepare: :environment do
-    ActiveRecord::Base.connected_to(database: :queue, role: :writing) do
+    ActiveRecord::Base.connected_to(shard: :queue, role: :writing) do
       connection = ActiveRecord::Base.connection
 
       unless connection.table_exists?("solid_queue_processes")
