@@ -69,6 +69,7 @@ COPY --chown=rails:rails --from=build /rails /rails
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
+# Start the lab API on port 80 (compose maps 53000:80). Thruster is not in the Gemfile.
 EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+ENV PORT=80
+CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "80"]

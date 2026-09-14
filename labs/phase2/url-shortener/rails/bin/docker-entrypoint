@@ -1,8 +1,10 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+# Lab container: prepare schema, then exec the given command.
+if [ -z "$SECRET_KEY_BASE" ]; then
+  export SECRET_KEY_BASE="lab-dev-secret-not-for-production"
 fi
+
+./bin/rails db:prepare
 
 exec "${@}"

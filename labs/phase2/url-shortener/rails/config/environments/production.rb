@@ -35,7 +35,7 @@ Rails.application.configure do
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Prevent health checks from clogging up the logs.
-  config.silence_healthcheck_path = "/up"
+  config.silence_healthcheck_path = "/health"
 
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
@@ -79,6 +79,7 @@ Rails.application.configure do
   #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
   # ]
   #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Skip DNS rebinding protection for the lab container.
+  config.hosts.clear
+  config.host_authorization = { exclude: ->(request) { %w[/health /ready /up].include?(request.path) } }
 end

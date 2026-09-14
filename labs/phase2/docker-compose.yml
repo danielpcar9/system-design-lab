@@ -4,30 +4,47 @@ services:
     environment:
       DATABASE_URL: postgresql://lab:lab@postgres:5432/lab
       REDIS_URL: redis://redis:6379/0
+      LAB_ENV: lab
     ports:
       - "58000:8000"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
 
   rails:
     build: ./url-shortener/rails
     environment:
       RAILS_ENV: production
+      LAB_ENV: lab
       DB_HOST: postgres
       DB_PORT: 5432
       POSTGRES_USER: lab
       POSTGRES_PASSWORD: lab
       POSTGRES_DB: lab
       POSTGRES_QUEUE_DB: lab
+      REDIS_URL: redis://redis:6379/0
       SOLID_QUEUE_IN_PUMA: "true"
+      SECRET_KEY_BASE: lab-dev-secret-not-for-production
+      PORT: "80"
     ports:
       - "53000:80"
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:80/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
 
   postgres:
     image: postgres:16-alpine
@@ -49,6 +66,11 @@ services:
     image: redis:7-alpine
     ports:
       - "56379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
 
 volumes:
   phase2-postgres:
