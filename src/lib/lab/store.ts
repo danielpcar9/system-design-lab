@@ -40,6 +40,7 @@ type LabState = {
   connectFrom: string | null;
   extraNodes: Record<string, LabNode[]>;
   extraEdges: Record<string, LabEdge[]>;
+  removedEdges: Record<string, boolean>;
   edgeMeta: Record<string, { flow: FlowKind; sync: SyncKind }>;
   decisions: Decisions;
   load: LoadInputs;
@@ -69,6 +70,7 @@ type LabState = {
   setConnectFrom: (id: string | null) => void;
   addNode: (scenarioId: string, node: LabNode) => void;
   addEdge: (scenarioId: string, edge: LabEdge) => void;
+  removeEdge: (scenarioId: string, from: string, to: string) => void;
   setEdgeMeta: (key: string, flow: FlowKind, sync: SyncKind) => void;
   setDecision: <K extends keyof Decisions>(key: K, value: Decisions[K]) => void;
   setLoad: (partial: Partial<LoadInputs>) => void;
@@ -104,6 +106,7 @@ export const useLabStore = create<LabState>()(
       connectFrom: null,
       extraNodes: {},
       extraEdges: {},
+      removedEdges: {},
       edgeMeta: {},
       decisions: DEFAULT_DECISIONS,
       load: { rps: 800, readRatio: 0.8, dataGb: 80, tokPerReq: 1200 },
@@ -146,9 +149,24 @@ export const useLabStore = create<LabState>()(
         set((state) => {
           const cur = state.extraEdges[scenarioId] ?? [];
           if (cur.some((e) => e.from === edge.from && e.to === edge.to)) return state;
+          const removedEdges = { ...state.removedEdges };
+          delete removedEdges[`${scenarioId}:${edge.from}->${edge.to}`];
           return {
             extraEdges: { ...state.extraEdges, [scenarioId]: [...cur, edge] },
+            removedEdges,
             connectFrom: null,
+          };
+        }),
+      removeEdge: (scenarioId, from, to) =>
+        set((state) => {
+          const key = `${scenarioId}:${from}->${to}`;
+          const extra = (state.extraEdges[scenarioId] ?? []).filter(
+            (edge) => !(edge.from === from && edge.to === to),
+          );
+          return {
+            extraEdges: { ...state.extraEdges, [scenarioId]: extra },
+            removedEdges: { ...state.removedEdges, [key]: true },
+            selectedEdge: null,
           };
         }),
       setEdgeMeta: (key, flow, sync) =>
@@ -227,6 +245,7 @@ export const useLabStore = create<LabState>()(
         positions: state.positions,
         extraNodes: state.extraNodes,
         extraEdges: state.extraEdges,
+        removedEdges: state.removedEdges,
         edgeMeta: state.edgeMeta,
         decisions: state.decisions,
         load: state.load,

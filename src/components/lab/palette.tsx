@@ -4,6 +4,7 @@ import { KIND_META } from "@/lib/lab/meta";
 import { PALETTE_KINDS } from "@/lib/lab/scenarios";
 import { useLabStore } from "@/lib/lab/store";
 import type { KindFamily, ScenarioTrack } from "@/lib/lab/types";
+import type { EdgeFeedbackTone } from "@/lib/lab/graph";
 import { cn } from "@/lib/utils";
 
 function familyText(family: KindFamily): string {
@@ -79,20 +80,41 @@ export function EdgeInspector({
   flow,
   sync,
   onCycle,
+  onDelete,
+  feedback,
 }: {
   label: string;
   flow: string;
   sync: string;
   onCycle: () => void;
+  onDelete: () => void;
+  feedback: { tone: EdgeFeedbackTone; reason: string };
 }) {
   const locale = useLabStore((s) => s.locale);
+  const feedbackStyle =
+    feedback.tone === "good"
+      ? "border-cobalt/30 bg-cobalt-dim/40 text-cobalt"
+      : feedback.tone === "bad"
+        ? "border-magenta/30 bg-magenta-dim/30 text-magenta"
+        : "border-sun/30 bg-sun-dim/30 text-sun";
+  const feedbackLabel =
+    feedback.tone === "good"
+      ? t(locale, UI.edgeFeedbackGood)
+      : feedback.tone === "bad"
+        ? t(locale, UI.edgeFeedbackBad)
+        : t(locale, UI.edgeFeedbackWarn);
   return (
-    <div className="rounded-lg border border-border bg-elevated px-3 py-2">
+    <div className="w-full rounded-lg border border-border bg-elevated px-3 py-2 sm:max-w-xl">
       <p className="text-xs uppercase tracking-wide text-subtle">{t(locale, UI.selectedEdge)}</p>
       <p className="mt-1 text-sm text-fg">{label}</p>
       <p className="mt-1 font-mono text-xs text-muted">
         {flow} · {sync}
       </p>
+      <div className={cn("mt-2 rounded-md border px-2.5 py-2 text-xs leading-relaxed", feedbackStyle)}>
+        <p className="font-medium">{feedbackLabel}</p>
+        <p className="mt-0.5 text-fg/80">{feedback.reason}</p>
+      </div>
+      <div className="mt-2 flex flex-wrap gap-2">
       <button
         type="button"
         onClick={onCycle}
@@ -100,6 +122,30 @@ export function EdgeInspector({
       >
         {t(locale, UI.cycleFlow)}
       </button>
+      <button
+        type="button"
+        onClick={onDelete}
+        className="mt-2 h-10 rounded-sm border border-magenta/40 px-3 text-xs text-magenta hover:bg-magenta-dim/30"
+      >
+        {t(locale, UI.unlinkEdge)}
+      </button>
+      </div>
     </div>
+  );
+}
+
+export function ConnectionGuide() {
+  const locale = useLabStore((s) => s.locale);
+  return (
+    <details className="rounded-lg border border-border bg-elevated px-3 py-2 text-xs text-muted">
+      <summary className="cursor-pointer list-none font-medium text-fg">{t(locale, UI.connectionGuideTitle)}</summary>
+      <ol className="mt-2 grid gap-1.5 leading-relaxed sm:grid-cols-2">
+        <li>1. {t(locale, UI.connectionGuideStepOne)}</li>
+        <li>2. {t(locale, UI.connectionGuideStepTwo)}</li>
+        <li>3. {t(locale, UI.connectionGuideStepThree)}</li>
+        <li>4. {t(locale, UI.connectionGuideStepFour)}</li>
+      </ol>
+      <p className="mt-2 border-t border-border pt-2 text-subtle">{t(locale, UI.connectionGuideHint)}</p>
+    </details>
   );
 }

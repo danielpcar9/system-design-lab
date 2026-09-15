@@ -4,7 +4,7 @@ import { AppShell } from "@/components/lab/app-shell";
 import { ArchitectureCanvas, FamilyLegend, FlowLegend } from "@/components/lab/canvas";
 import { DecisionMatrix } from "@/components/lab/decision-matrix";
 import { InterviewPanel } from "@/components/lab/interview-panel";
-import { ComponentPalette, EdgeInspector } from "@/components/lab/palette";
+import { ComponentPalette, ConnectionGuide, EdgeInspector } from "@/components/lab/palette";
 import { ModeTabs } from "@/components/lab/mode-tabs";
 import { PracticePanel } from "@/components/lab/practice-panel";
 import { StressPanel } from "@/components/lab/stress-panel";
@@ -12,7 +12,7 @@ import { DualStackViewer } from "@/components/lab/viewer";
 import { WalkthroughPanel } from "@/components/lab/walkthrough-panel";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { localizeLesson, localizeScenario, modeLabel, t, UI } from "@/lib/i18n";
-import { edgeKey, nextFlow, placeNode, resolveGraph } from "@/lib/lab/graph";
+import { edgeFeedback, edgeKey, nextFlow, placeNode, resolveGraph } from "@/lib/lab/graph";
 import { lessonFor } from "@/lib/lab/lessons";
 import { KIND_META } from "@/lib/lab/meta";
 import { scenarioById, SCENARIOS } from "@/lib/lab/scenarios";
@@ -32,6 +32,7 @@ function LabPage() {
   const selectedId = useLabStore((s) => s.selectedId);
   const setSelectedId = useLabStore((s) => s.setSelectedId);
   const selectedEdge = useLabStore((s) => s.selectedEdge);
+  const setSelectedEdge = useLabStore((s) => s.setSelectedEdge);
   const lens = useLabStore((s) => s.lens);
   const tab = useLabStore((s) => s.inspectorTab);
   const setTab = useLabStore((s) => s.setInspectorTab);
@@ -44,9 +45,11 @@ function LabPage() {
   const extraNodes = useLabStore((s) => s.extraNodes);
   const extraEdges = useLabStore((s) => s.extraEdges);
   const edgeMeta = useLabStore((s) => s.edgeMeta);
+  const removedEdges = useLabStore((s) => s.removedEdges);
   const addNode = useLabStore((s) => s.addNode);
   const addEdge = useLabStore((s) => s.addEdge);
   const setEdgeMeta = useLabStore((s) => s.setEdgeMeta);
+  const removeEdge = useLabStore((s) => s.removeEdge);
   const setInterviewTrack = useLabStore((s) => s.setInterviewTrack);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -57,8 +60,9 @@ function LabPage() {
       extraOf(extraNodes, raw.id),
       extraEdgesOf(extraEdges, raw.id),
       edgeMeta,
+      removedEdges,
     );
-  }, [raw, extraNodes, extraEdges, edgeMeta]);
+  }, [raw, extraNodes, extraEdges, edgeMeta, removedEdges]);
 
   useEffect(() => {
     if (!raw) return;
@@ -93,6 +97,7 @@ function LabPage() {
           flow: "mixed",
           sync: "sync",
         });
+        setSelectedEdge(`${connectFrom}->${id}`);
       }
       setConnectFrom(null);
       return;
@@ -214,13 +219,19 @@ function LabPage() {
                   label={`${KIND_META[graph.nodes.find((n) => n.id === edge.from)?.kind ?? "api"].title} → ${KIND_META[graph.nodes.find((n) => n.id === edge.to)?.kind ?? "api"].title}`}
                   flow={edge.flow ?? "mixed"}
                   sync={edge.sync ?? "sync"}
+                  feedback={(() => {
+                    const result = edgeFeedback(edge, graph.nodes);
+                    return { tone: result.tone, reason: t(locale, result.reason) };
+                  })()}
                   onCycle={() => {
                     const nxt = nextFlow(edge.flow ?? "mixed", edge.sync ?? "sync");
                     setEdgeMeta(edgeKey(raw.id, edge.from, edge.to), nxt.flow, nxt.sync);
                   }}
+                  onDelete={() => removeEdge(raw.id, edge.from, edge.to)}
                 />
               )}
             </div>
+            {studioMode === "design" && <ConnectionGuide />}
             <div className="flex flex-wrap gap-2 lg:hidden">
               {graph.nodes.map((n) => (
                 <button
